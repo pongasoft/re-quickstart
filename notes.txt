@@ -1,0 +1,11 @@
+# generate the background image to copy the png file format
+magick -size 400x200 canvas:black bg.png
+
+
+magick -size 3770x150 canvas:coral Panel_Folded_Front.png
+magick -size 3770x150 canvas:coral Panel_Folded_Back.png
+
+
+1U = 3770x345
+Rail = 155 (should be transparent)
+Back => 155 | 3460 | 155
