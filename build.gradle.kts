@@ -15,7 +15,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.2")
 }
 kotlin {
-    js {
+    js(IR) {
         browser {
             binaries.executable()
             webpackTask {
