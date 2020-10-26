@@ -182,25 +182,27 @@ fun init() {
     notification.info("Welcome!")
 
     elements["submit"]?.addListener("click") {
-        notification.info("Click")
-        val preview = document.getElementById("re-preview")
-        val frontPanel = GUI2D().generateFrontPanel()
-        val img = with(document.createElement("img")) { this as HTMLImageElement
-            src = frontPanel
-            this
-        }
-        notification.info("added front panel ${frontPanel.substring(0..50)} / ${preview} / $img")
-//        preview?.appendChild(img)
 
         val re = RackExtension()
-        re.generate().then { (name, blob) ->
+
+        notification.info("Click")
+        val preview = document.getElementById("re-preview")
+        val img = with(document.createElement("img")) { this as HTMLImageElement
+            id = "re-preview"
+            src = re.generateFrontPanelImgSrc()
+            width = re.frontPanelImgWidth / GUI2D.lowResScalingFactor
+            this
+        }
+        preview?.parentNode?.replaceChild(img, preview)
+
+        re.generateZip().then { (name, blob) ->
             notification.info("generated $name")
             val downloadAnchor = generateDownloadAnchor(name, blob)
             document.findMetaContent("X-re-quickstart-download-link")?.let {
               downloadAnchor.text = it
               notification.info(downloadAnchor)
             }
-            downloadAnchor.click()
+//            downloadAnchor.click()
         }
     }
 }
