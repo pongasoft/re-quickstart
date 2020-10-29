@@ -149,13 +149,13 @@ val entries =
 
 /**
  * Generate the download link. */
-fun generateDownloadAnchor(filename: String, blob: Blob) : HTMLAnchorElement {
-  return document.createElement("a") {
-    this as HTMLAnchorElement
-    href = URL.createObjectURL(blob)
-    target = "_blank"
-    download = filename
-  } as HTMLAnchorElement
+fun generateDownloadAnchor(filename: String, blob: Blob): HTMLAnchorElement {
+    return document.createElement("a") {
+        this as HTMLAnchorElement
+        href = URL.createObjectURL(blob)
+        target = "_blank"
+        download = filename
+    } as HTMLAnchorElement
 }
 
 /**
@@ -185,25 +185,41 @@ fun init() {
 
         val re = RackExtension()
 
-        notification.info("Click")
-        val preview = document.getElementById("re-preview")
-        val img = with(document.createElement("img")) { this as HTMLImageElement
-            id = "re-preview"
-            src = re.generateFrontPanelImgSrc()
-            width = re.frontPanelImgWidth / GUI2D.lowResScalingFactor
-            this
-        }
-        preview?.parentNode?.replaceChild(img, preview)
+        re.addREProperty(
+            AudioStereoPair(
+                left = AudioSocket("MainOutLeft", AudioSocketType.output, 2200, 0),
+                right = AudioSocket("MainOutRight", AudioSocketType.output, 2350, 0)
+            )
+        )
 
-        re.generateZip().then { (name, blob) ->
-            notification.info("generated $name")
-            val downloadAnchor = generateDownloadAnchor(name, blob)
-            document.findMetaContent("X-re-quickstart-download-link")?.let {
-              downloadAnchor.text = it
-              notification.info(downloadAnchor)
-            }
-//            downloadAnchor.click()
-        }
+        notification.info("Click")
+
+        notification.info("// motherboard")
+        notification.info(re.motherboard())
+
+        notification.info("**************************")
+        notification.info("// device2D")
+        notification.info(re.device2D())
+
+//        val preview = document.getElementById("re-preview")
+//        val img = with(document.createElement("img")) {
+//            this as HTMLImageElement
+//            id = "re-preview"
+//            src = re.generateFrontPanelImgSrc()
+//            width = re.frontPanelImgWidth / GUI2D.lowResScalingFactor
+//            this
+//        }
+//        preview?.parentNode?.replaceChild(img, preview)
+//
+//        re.generateZip().then { (name, blob) ->
+//            notification.info("generated $name")
+//            val downloadAnchor = generateDownloadAnchor(name, blob)
+//            document.findMetaContent("X-re-quickstart-download-link")?.let {
+//                downloadAnchor.text = it
+//                notification.info(downloadAnchor)
+//            }
+////            downloadAnchor.click()
+//        }
     }
 }
 

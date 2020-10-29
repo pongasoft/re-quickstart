@@ -3,17 +3,48 @@ import kotlin.js.Promise
 
 /**
  * Represents the rack extension */
-class RackExtension(val sizeInU : Int = 1) {
+class RackExtension(val sizeInU: Int = 1) {
 
-    private val gui2D : GUI2D = GUI2D(sizeInU)
+    private val _gui2D: GUI2D = GUI2D(sizeInU)
+    private val _reProperties: MutableCollection<IREProperty> = mutableListOf()
 
     /**
      * generateFrontPanelImgSrc */
-    fun generateFrontPanelImgSrc() = gui2D.generateFrontPanelElement().toDataURL(type = "image/png")
+    fun generateFrontPanelImgSrc() = _gui2D.generateFrontPanelElement().toDataURL(type = "image/png")
 
     /**
      * frontPanelImgWidth */
-    val frontPanelImgWidth get() = gui2D.width
+    val frontPanelImgWidth get() = _gui2D.width
+
+    fun addREProperty(prop: IREProperty) = _reProperties.add(prop)
+
+    fun motherboard() : String {
+        return """
+format_version = "1.0"
+            
+audio_outputs = {}
+audio_inputs = {}
+${_reProperties.map { it.motherboard() }.joinToString(separator = "\n")}
+"""
+    }
+
+    fun device2D() : String {
+        val content = Panel.values().map {panel ->
+            """
+----
+-- $panel
+----
+$panel = {}
+${_reProperties.map { it.device2D(panel) }.joinToString(separator = "\n")}
+"""
+        }.joinToString(separator = "\n")
+
+        return """
+format_version = "2.0"
+            
+$content
+"""
+    }
 
     /**
      * Generates the (promise) of the zip file
@@ -25,7 +56,7 @@ class RackExtension(val sizeInU : Int = 1) {
         val zip = JSZip()
         val rootDir = zip.folder(root)
 
-        return Promise.all(gui2D.generateBackgroundBlobs()).then { array ->
+        return Promise.all(_gui2D.generateBackgroundBlobs()).then { array ->
             // add the background images (async generation)
             array.forEach { (name, blob) ->
                 rootDir.file("GUI2D/$name", blob)
