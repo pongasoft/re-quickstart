@@ -201,15 +201,15 @@ fun init() {
         notification.info("// device2D")
         notification.info(re.device2D())
 
-//        val preview = document.getElementById("re-preview")
-//        val img = with(document.createElement("img")) {
-//            this as HTMLImageElement
-//            id = "re-preview"
-//            src = re.generateFrontPanelImgSrc()
-//            width = re.frontPanelImgWidth / GUI2D.lowResScalingFactor
-//            this
-//        }
-//        preview?.parentNode?.replaceChild(img, preview)
+        val preview = document.getElementById("re-preview")
+        val img = with(document.createElement("img")) {
+            this as HTMLImageElement
+            id = "re-preview"
+            src = re.generatePanelImgSrc(Panel.front)
+            width = re.getWidth(Panel.front) / GUI2D.lowResScalingFactor
+            this
+        }
+        preview?.parentNode?.replaceChild(img, preview)
 //
 //        re.generateZip().then { (name, blob) ->
 //            notification.info("generated $name")

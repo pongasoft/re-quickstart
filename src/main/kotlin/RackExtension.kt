@@ -10,11 +10,9 @@ class RackExtension(val sizeInU: Int = 1) {
 
     /**
      * generateFrontPanelImgSrc */
-    fun generateFrontPanelImgSrc() = _gui2D.generateFrontPanelElement().toDataURL(type = "image/png")
+    fun generatePanelImgSrc(panel: Panel) = _gui2D.generatePanelElement(panel).toDataURL(type = "image/png")
 
-    /**
-     * frontPanelImgWidth */
-    val frontPanelImgWidth get() = _gui2D.width
+    fun getWidth(panel: Panel) = _gui2D.getWidth(panel)
 
     fun addREProperty(prop: IREProperty) = _reProperties.add(prop)
 
@@ -29,7 +27,7 @@ ${_reProperties.map { it.motherboard() }.joinToString(separator = "\n")}
     }
 
     fun device2D() : String {
-        val content = Panel.values().map {panel ->
+        val content = Panel.values().map { panel ->
             """
 ----
 -- $panel

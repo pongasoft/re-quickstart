@@ -1,21 +1,10 @@
+/**
+ * An audio socket can either be an input or an output */
 enum class AudioSocketType { input, output }
 
 /**
- * Audio sockets can only be put on the back panel */
-class AudioSocketWidget(val type: AudioSocketType) : REPropertyWidget(Panel.back) {
-    override fun hdgui2D(prop: REProperty): String {
-        return """
-    --- ${prop.name} | audio $type socket
-    jbox.audio_${type}_socket {
-      graphics = {
-        node = "${prop.nodeName(panel)}",
-      },
-      socket = "${prop.path}",
-    },
-"""
-    }
-}
-
+ * Represents the (built-in) audio socket. The default image provided is the one that comes with the SDK but it
+ * is ignored anyway because the SDK uses its own representation */
 class AudioSocket(
     name: String,
     val type: AudioSocketType,
@@ -36,8 +25,29 @@ audio_${type}s["$name"] = jbox.audio_$type {
     }
 }
 
+/**
+ * Audio sockets can only be put on the back panel */
+class AudioSocketWidget(val type: AudioSocketType) : REPropertyWidget(Panel.back) {
+    override fun hdgui2D(prop: REProperty): String {
+        return """
+    --- ${prop.name} | audio $type socket
+    jbox.audio_${type}_socket {
+      graphics = {
+        node = "${prop.nodeName(panel)}",
+      },
+      socket = "${prop.path}",
+    },
+"""
+    }
+}
+
+/**
+ * Encapsulates the concept of an audio stereo pair (left and right). Significant for the motherboard routing call */
 class AudioStereoPair(val left: AudioSocket, val right: AudioSocket) : IREProperty {
 
+    /**
+     * Adds a `add_stereo_audio_routing_pair` call so that Reason automatically wires both cables
+     * when one is connected */
     override fun motherboard(): String {
         return """
 -- stereo pair ${left.name} / ${right.name}            
@@ -50,6 +60,7 @@ jbox.add_stereo_audio_routing_pair {
 """
     }
 
+    // device2D
     override fun device2D(panel: Panel): String {
         return if (panel == Panel.back) """
 ${left.device2D(panel)}            
@@ -57,6 +68,7 @@ ${right.device2D(panel)}
 """ else ""
     }
 
+    // hdgui2D
     override fun hdgui2D(panel: Panel): String {
         return if (panel == Panel.back) """
 ${left.hdgui2D(panel)}            
