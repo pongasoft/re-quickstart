@@ -1,3 +1,5 @@
+import org.w3c.dom.CanvasRenderingContext2D
+
 /**
  * An audio socket can either be an input or an output */
 enum class AudioSocketType { input, output }
@@ -74,5 +76,10 @@ ${right.device2D(panel)}
 ${left.hdgui2D(panel)}            
 ${right.hdgui2D(panel)}            
 """ else ""
+    }
+
+    override fun render(panel: Panel, ctx: CanvasRenderingContext2D, storage: Storage) {
+        left.render(panel, ctx, storage)
+        right.render(panel, ctx, storage)
     }
 }

@@ -1,3 +1,5 @@
+import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.HTMLCanvasElement
 import org.w3c.files.Blob
 import kotlin.js.Promise
 
@@ -11,6 +13,15 @@ class RackExtension(val sizeInU: Int = 1) {
     /**
      * generateFrontPanelImgSrc */
     fun generatePanelImgSrc(panel: Panel) = _gui2D.generatePanelElement(panel).toDataURL(type = "image/png")
+
+    fun renderPanel(panel: Panel, storage: Storage): HTMLCanvasElement {
+        val canvas = _gui2D.generatePanelElement(panel)
+        with(canvas.getContext("2d")) {
+            this as CanvasRenderingContext2D
+            _reProperties.forEach { prop -> prop.render(panel, this, storage) }
+        }
+        return canvas
+    }
 
     fun getWidth(panel: Panel) = _gui2D.getWidth(panel)
 

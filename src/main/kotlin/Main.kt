@@ -164,6 +164,8 @@ fun generateDownloadAnchor(filename: String, blob: Blob): HTMLAnchorElement {
 fun init() {
     val reQuickStartFormID = document.findMetaContent("X-re-quickstart-form-id") ?: "re-quickstart-form"
 
+    val storage = Storage.load()
+
     document.getElementById(reQuickStartFormID)
         ?.replaceWith(
             createHTML(
@@ -187,8 +189,8 @@ fun init() {
 
         re.addREProperty(
             AudioStereoPair(
-                left = AudioSocket("MainOutLeft", AudioSocketType.output, 2200, 0),
-                right = AudioSocket("MainOutRight", AudioSocketType.output, 2350, 0)
+                left = AudioSocket("MainOutLeft", AudioSocketType.output, 2200, 100),
+                right = AudioSocket("MainOutRight", AudioSocketType.output, 2350, 100)
             )
         )
 
@@ -202,14 +204,20 @@ fun init() {
         notification.info(re.device2D())
 
         val preview = document.getElementById("re-preview")
-        val img = with(document.createElement("img")) {
-            this as HTMLImageElement
-            id = "re-preview"
-            src = re.generatePanelImgSrc(Panel.front)
-            width = re.getWidth(Panel.front) / GUI2D.lowResScalingFactor
-            this
+        storage.then { s ->
+            console.log("Cable_Attachment_Audio_01_1frames => ${s.findImageResource("Cable_Attachment_Audio_01_1frames")?.image?.naturalWidth}")
+            val img = with(document.createElement("img")) {
+                this as HTMLImageElement
+                id = "re-preview"
+                src = re.renderPanel(Panel.back, s).toDataURL(type = "image/png")
+                width = re.getWidth(Panel.back) / GUI2D.lowResScalingFactor
+//                src = re.renderPanel(Panel.front, s).toDataURL(type = "image/png")
+//                width = re.getWidth(Panel.front) / GUI2D.lowResScalingFactor
+                this
+            }
+            preview?.parentNode?.replaceChild(img, preview)
         }
-        preview?.parentNode?.replaceChild(img, preview)
+
 //
 //        re.generateZip().then { (name, blob) ->
 //            notification.info("generated $name")

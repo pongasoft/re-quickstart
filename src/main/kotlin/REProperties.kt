@@ -1,3 +1,5 @@
+import org.w3c.dom.CanvasRenderingContext2D
+
 enum class Panel {
     front,
     back,
@@ -43,6 +45,8 @@ interface IREProperty {
      * @return the widget representing the property on a given panel as defined in `hdgui_2D.lua`.
      *         Returns empty string if there is no widget for the given panel */
     fun hdgui2D(panel: Panel): String
+
+    fun render(panel: Panel, ctx: CanvasRenderingContext2D, storage: Storage)
 }
 
 /**
@@ -77,6 +81,10 @@ abstract class REProperty(val name: String,
         return _widgets[panel]?.hdgui2D(this) ?: ""
     }
 
+    override fun render(panel: Panel, ctx: CanvasRenderingContext2D, storage: Storage) {
+        _views[panel]?.render(ctx, storage)
+    }
+
     /**
      * The name of the node in `device2D.lua` is arbitrary but used by the widget in `hdgui2D.lua` for a given
      * panel. This method makes sure that both names are in sync. */
@@ -106,6 +114,27 @@ $panel["${prop.nodeName(panel)}"] = {
   { path = "$image" $f}
 }
 """
+    }
+
+    fun render(ctx: CanvasRenderingContext2D, storage: Storage) {
+        console.log("rendering $image")
+        storage.findImageResource(image)?.let {
+            val src = it.image
+            val w = src.width.toDouble()
+            val h = src.height / frames.toDouble() // height (first frame)
+            console.log("rendering / 0,0 ${w}x$h $offsetX, $offsetY ")
+            ctx.drawImage(
+                src,
+                0.toDouble(), // src x
+                0.toDouble(), // src y
+                w, // src width
+                h, // src height (first frame)
+                offsetX.toDouble(),
+                offsetY.toDouble(),
+                w,
+                h
+            )
+        }
     }
 }
 
