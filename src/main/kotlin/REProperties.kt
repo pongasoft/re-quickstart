@@ -118,7 +118,7 @@ $panel["${prop.nodeName(panel)}"] = {
 
     fun render(ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
         console.log("rendering $image")
-        imageProvider.findImage(image)?.let {
+        imageProvider.findImageResource(image)?.image?.let {
             val src = it
             val w = src.width.toDouble()
             val h = src.height / frames.toDouble() // height (first frame)

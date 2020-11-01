@@ -17,8 +17,8 @@ class RackExtension(val info: Info) {
 
             return RackExtension(
                 Info(
-                    type = Type.studio_fx,
-                    sizeInU = params["sizeInU"]?.toInt() ?: 1)
+                    type = Type.valueOf(params["device_type"] ?: Type.studio_fx.toString()),
+                    sizeInU = params["device_height_ru"]?.toInt() ?: 1)
             )
         }
     }

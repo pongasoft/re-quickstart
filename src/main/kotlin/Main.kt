@@ -57,42 +57,86 @@ class Notification(id: String? = null) {
 /**
  * Encapsulates the entries that the user fills out to customize the blank plugin
  */
-data class OptionEntry(
+abstract class OptionEntry(
     val name: String,
     val label: String? = null,
-    val type: InputType = InputType.text,
-    val checked: Boolean? = null,
     val defaultValue: String? = null,
     val desc: String? = null,
-    val maxLength: Int? = null,
     val disabled: Boolean? = null
-)
+) {
+    abstract fun render(tag: HtmlBlockTag)
+}
+
+class OptionInputEntry(
+    name: String,
+    label: String? = null,
+    val type: InputType = InputType.text,
+    val checked: Boolean? = null,
+    defaultValue: String? = null,
+    desc: String? = null,
+    val maxLength: Int? = null,
+    disabled: Boolean? = null
+) : OptionEntry(name, label, defaultValue, desc, disabled) {
+
+    override fun render(tag: HtmlBlockTag) {
+        val entry = this
+        with(tag) {
+            input(type = entry.type, name = entry.name) {
+                id = entry.name
+
+                entry.maxLength?.let { maxLength = entry.maxLength.toString() }
+
+                if (entry.type == InputType.checkBox) {
+                    checked = entry.checked ?: true
+                }
+
+                if (entry.defaultValue != null) {
+                    value = entry.defaultValue
+                    +entry.defaultValue
+                }
+
+                if (entry.disabled != null) {
+                    disabled = entry.disabled
+                }
+            }
+        }
+    }
+}
+
+class OptionSelectEntry(
+    name: String,
+    label: String? = null,
+    val options: Collection<Pair<String, String>>? = null,
+    defaultValue: String? = null,
+    desc: String? = null,
+    disabled: Boolean? = null
+) : OptionEntry(name, label, defaultValue, desc, disabled) {
+
+    override fun render(tag: HtmlBlockTag) {
+        val entry = this
+        with(tag) {
+            select {
+                name = entry.name
+
+                entry.options?.forEach { o ->
+                    option {
+                        value = o.first
+                        selected = o.first == entry.defaultValue
+                        +o.second
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 /**
  * Extension function to handle `OptionEntry`
  */
 fun TBODY.optionEntry(entry: OptionEntry): Unit = tr {
     td("name") { entry.label?.let { label { htmlFor = entry.name; +entry.label } } }
-    td("control") {
-        input(type = entry.type, name = entry.name) {
-            id = entry.name
-
-            entry.maxLength?.let { maxLength = entry.maxLength.toString() }
-
-            if (entry.type == InputType.checkBox) {
-                checked = entry.checked ?: true
-            }
-
-            if (entry.defaultValue != null) {
-                value = entry.defaultValue
-                +entry.defaultValue
-            }
-
-            if (entry.disabled != null) {
-                disabled = entry.disabled
-            }
-        }
-    }
+    td("control") { entry.render(this) }
     td("desc") { entry.desc?.let { +entry.desc } }
 }
 
@@ -117,29 +161,43 @@ fun createHTML(entries: Iterator<OptionEntry>, elementId: String? = null, classe
  */
 val entries =
     arrayOf(
-        OptionEntry(
+        OptionInputEntry(
             name = "long_name",
             label = "Plugin Name (Long)",
             desc = "Long name / 40 characters max"
         ),
-        OptionEntry(
+        OptionInputEntry(
             name = "medium_name",
             label = "Plugin Name (Medium)",
             desc = "Medium name / 20 characters max"
         ),
-        OptionEntry(
+        OptionInputEntry(
             name = "short_name",
             label = "Plugin Name (Short)",
             desc = "Short name / 10 characters max"
         ),
-        OptionEntry(
+        OptionSelectEntry(
+            name = "device_type",
+            label = "Device Type",
+            options = listOf(Pair("studio_fx", "Studio FX")),
+            defaultValue = "studio_fx",
+            desc = "Type of the device (determines what kind of inputs/outputs and section in browser)"
+        ),
+        OptionSelectEntry(
+            name = "device_height_ru",
+            label = "Device Size",
+            options = (1..9).map { Pair("$it", "${it}U") },
+            defaultValue = "1",
+            desc = "Height of the device (in U)"
+        ),
+        OptionInputEntry(
             name = "enable_vst2",
             type = InputType.checkBox,
             label = "Enable VST2",
             checked = false,
             desc = "Makes the plugin compatible with both VST2 and VST3"
         ),
-        OptionEntry(
+        OptionInputEntry(
             name = "submit",
             type = InputType.button,
             defaultValue = "Generate blank plugin",
