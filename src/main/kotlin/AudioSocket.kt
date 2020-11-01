@@ -12,7 +12,7 @@ class AudioSocket(
     val type: AudioSocketType,
     offsetX: Int,
     offsetY: Int,
-    image: String = "Cable_Attachment_Audio_01_1frames"
+    image: String
 ) : REProperty(name, listOf(AudioSocketWidget(type)), listOf(REPropertyView(Panel.back, offsetX, offsetY, image))) {
 
     override val path: String

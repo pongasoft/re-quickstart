@@ -1,13 +1,34 @@
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.HTMLFormElement
 import org.w3c.files.Blob
+import org.w3c.xhr.FormData
 import kotlin.js.Promise
 
 /**
  * Represents the rack extension */
-class RackExtension(val sizeInU: Int = 1) {
+class RackExtension(val info: Info) {
 
-    private val _gui2D: GUI2D = GUI2D(sizeInU)
+
+    companion object {
+        fun fromForm(form: HTMLFormElement): RackExtension {
+            val data = FormData(form)
+            val params = data.keys().asSequence().associateBy({it}, { e -> data.get(e).toString() })
+
+            return RackExtension(
+                Info(
+                    type = Type.studio_fx,
+                    sizeInU = params["sizeInU"]?.toInt() ?: 1)
+            )
+        }
+    }
+
+    enum class Type { studio_fx }
+
+    class Info(val type: Type,
+               val sizeInU: Int = 1)
+
+    private val _gui2D: GUI2D = GUI2D(info)
     private val _reProperties: MutableCollection<IREProperty> = mutableListOf()
 
     /**
@@ -24,6 +45,7 @@ class RackExtension(val sizeInU: Int = 1) {
     }
 
     fun getWidth(panel: Panel) = _gui2D.getWidth(panel)
+    fun getHeight(panel: Panel) = _gui2D.getHeight(panel)
 
     fun addREProperty(prop: IREProperty) = _reProperties.add(prop)
 

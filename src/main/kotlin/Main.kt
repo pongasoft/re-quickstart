@@ -3,22 +3,12 @@ import kotlinx.browser.window
 import kotlinx.dom.createElement
 import kotlinx.html.*
 import kotlinx.html.dom.create
-import org.w3c.dom.*
-import org.w3c.dom.events.Event
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLAnchorElement
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.url.URL
 import org.w3c.files.Blob
-
-/**
- * Finds (may not exist) the content of a meta entry whose name is provided */
-fun Document.findMetaContent(name: String): String? {
-    return querySelector("meta[name='$name']")?.getAttribute("content")
-}
-
-/**
- * Adding a listener where the element is passed back in the closure as "this" for convenience */
-fun HTMLInputElement.addListener(type: String, block: HTMLInputElement.(event: Event) -> Unit) {
-    addEventListener(type, { event -> block(event) })
-}
 
 /**
  * Encapsulates a notification section where messages can be added */
@@ -128,9 +118,19 @@ fun createHTML(entries: Iterator<OptionEntry>, elementId: String? = null, classe
 val entries =
     arrayOf(
         OptionEntry(
-            name = "name",
-            label = "Plugin Name",
-            desc = "Must be a valid C++ class name"
+            name = "long_name",
+            label = "Plugin Name (Long)",
+            desc = "Long name / 40 characters max"
+        ),
+        OptionEntry(
+            name = "medium_name",
+            label = "Plugin Name (Medium)",
+            desc = "Medium name / 20 characters max"
+        ),
+        OptionEntry(
+            name = "short_name",
+            label = "Plugin Name (Short)",
+            desc = "Short name / 10 characters max"
         ),
         OptionEntry(
             name = "enable_vst2",
@@ -164,7 +164,7 @@ fun generateDownloadAnchor(filename: String, blob: Blob): HTMLAnchorElement {
 fun init() {
     val reQuickStartFormID = document.findMetaContent("X-re-quickstart-form-id") ?: "re-quickstart-form"
 
-    val storage = Storage.load()
+    val reMgrPromise = REMgr.load()
 
     document.getElementById(reQuickStartFormID)
         ?.replaceWith(
@@ -185,37 +185,26 @@ fun init() {
 
     elements["submit"]?.addListener("click") {
 
-        val re = RackExtension()
+        reMgrPromise.then { reMgr ->
 
-        re.addREProperty(
-            AudioStereoPair(
-                left = AudioSocket("MainOutLeft", AudioSocketType.output, 2200, 100),
-                right = AudioSocket("MainOutRight", AudioSocketType.output, 2350, 100)
-            )
-        )
+            val re = reMgr.createRE(form!!)
 
-        notification.info("Click")
+            notification.info("Click")
 
-        notification.info("// motherboard")
-        notification.info(re.motherboard())
+            notification.info("// motherboard")
+            notification.info(re.motherboard())
 
-        notification.info("**************************")
-        notification.info("// device2D")
-        notification.info(re.device2D())
+            notification.info("**************************")
+            notification.info("// device2D")
+            notification.info(re.device2D())
 
-        val preview = document.getElementById("re-preview")
-        storage.then { s ->
-            console.log("Cable_Attachment_Audio_01_1frames => ${s.findImageResource("Cable_Attachment_Audio_01_1frames")?.image?.naturalWidth}")
-            val img = with(document.createElement("img")) {
-                this as HTMLImageElement
-                id = "re-preview"
-                src = re.renderPanel(Panel.back, s).toDataURL(type = "image/png")
-                width = re.getWidth(Panel.back) / GUI2D.lowResScalingFactor
-//                src = re.renderPanel(Panel.front, s).toDataURL(type = "image/png")
-//                width = re.getWidth(Panel.front) / GUI2D.lowResScalingFactor
-                this
+            reMgr.renderPreview(re, Panel.back)
+
+            Panel.values().forEach { panel ->
+                (document.getElementById("re-preview-$panel") as? HTMLAnchorElement)?.addEventListener("click", {
+                    reMgr.renderPreview(re, panel)
+                })
             }
-            preview?.parentNode?.replaceChild(img, preview)
         }
 
 //

@@ -5,6 +5,8 @@ import org.w3c.fetch.Response
 import org.w3c.files.Blob
 import kotlin.js.Promise
 
+val AUDIO_SOCKET_IMAGE = "Cable_Attachment_Audio_01_1frames"
+
 /**
  * Used in promise rejection when detecting error (status code != 200)
  */
@@ -83,7 +85,7 @@ class Storage(val images: Map<String, ImageResource>) {
 
     companion object {
         fun load() : Promise<Storage> {
-            return Promise.all(arrayOf("Cable_Attachment_Audio_01_1frames", "Placeholder", "Tape_Horizontal_1frames").map { name ->
+            return Promise.all(arrayOf(AUDIO_SOCKET_IMAGE, "Placeholder", "Tape_Horizontal_1frames").map { name ->
                 fetchImageResource("images/BuiltIn/$name.png").then { ir -> Pair(name, ir)}
             }.toTypedArray()).then {
                 Storage(mapOf(*it))
