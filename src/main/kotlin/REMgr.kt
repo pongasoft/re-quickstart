@@ -11,7 +11,7 @@ class REMgr(private val storage: Storage) {
 
         val margin = 10
 
-        val img = storage.findImageResource(AUDIO_SOCKET_IMAGE)?.image!!
+        val audioSocket = storage.getAudioSocketImageResource()
 
         val centerX = re.getWidth(Panel.back) / 2
         val centerY = re.getHeight(Panel.back) / 2
@@ -19,16 +19,16 @@ class REMgr(private val storage: Storage) {
         // Main in
         re.addREProperty(
             AudioStereoPair(
-                left = AudioSocket("MainInLeft", AudioSocketType.input, centerX - margin - img.width, centerY - margin - img.height, AUDIO_SOCKET_IMAGE),
-                right = AudioSocket("MainInRight", AudioSocketType.input, centerX + margin, centerY - margin - img.height, AUDIO_SOCKET_IMAGE)
+                left = AudioSocket("MainInLeft", AudioSocketType.input, centerX - margin - audioSocket.image.width, centerY - margin - audioSocket.image.height, audioSocket.name),
+                right = AudioSocket("MainInRight", AudioSocketType.input, centerX + margin, centerY - margin - audioSocket.image.height, audioSocket.name)
             )
         )
 
         // Main out
         re.addREProperty(
             AudioStereoPair(
-                left = AudioSocket("MainOutLeft", AudioSocketType.output, centerX - margin - img.width, centerY + margin, AUDIO_SOCKET_IMAGE),
-                right = AudioSocket("MainOutRight", AudioSocketType.output, centerX + margin, centerY + margin, AUDIO_SOCKET_IMAGE)
+                left = AudioSocket("MainOutLeft", AudioSocketType.output, centerX - margin - audioSocket.image.width, centerY + margin, audioSocket.name),
+                right = AudioSocket("MainOutRight", AudioSocketType.output, centerX + margin, centerY + margin, audioSocket.name)
             )
         )
 

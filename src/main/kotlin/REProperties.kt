@@ -46,7 +46,7 @@ interface IREProperty {
      *         Returns empty string if there is no widget for the given panel */
     fun hdgui2D(panel: Panel): String
 
-    fun render(panel: Panel, ctx: CanvasRenderingContext2D, storage: Storage)
+    fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider)
 }
 
 /**
@@ -81,8 +81,8 @@ abstract class REProperty(val name: String,
         return _widgets[panel]?.hdgui2D(this) ?: ""
     }
 
-    override fun render(panel: Panel, ctx: CanvasRenderingContext2D, storage: Storage) {
-        _views[panel]?.render(ctx, storage)
+    override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
+        _views[panel]?.render(ctx, imageProvider)
     }
 
     /**
@@ -116,10 +116,10 @@ $panel["${prop.nodeName(panel)}"] = {
 """
     }
 
-    fun render(ctx: CanvasRenderingContext2D, storage: Storage) {
+    fun render(ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
         console.log("rendering $image")
-        storage.findImageResource(image)?.let {
-            val src = it.image
+        imageProvider.findImage(image)?.let {
+            val src = it
             val w = src.width.toDouble()
             val h = src.height / frames.toDouble() // height (first frame)
             console.log("rendering / 0,0 ${w}x$h $offsetX, $offsetY ")

@@ -78,8 +78,8 @@ ${right.hdgui2D(panel)}
 """ else ""
     }
 
-    override fun render(panel: Panel, ctx: CanvasRenderingContext2D, storage: Storage) {
-        left.render(panel, ctx, storage)
-        right.render(panel, ctx, storage)
+    override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
+        left.render(panel, ctx, imageProvider)
+        right.render(panel, ctx, imageProvider)
     }
 }

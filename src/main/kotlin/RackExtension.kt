@@ -35,11 +35,11 @@ class RackExtension(val info: Info) {
      * generateFrontPanelImgSrc */
     fun generatePanelImgSrc(panel: Panel) = _gui2D.generatePanelElement(panel).toDataURL(type = "image/png")
 
-    fun renderPanel(panel: Panel, storage: Storage): HTMLCanvasElement {
+    fun renderPanel(panel: Panel, imageProvider: ImageProvider): HTMLCanvasElement {
         val canvas = _gui2D.generatePanelElement(panel)
         with(canvas.getContext("2d")) {
             this as CanvasRenderingContext2D
-            _reProperties.forEach { prop -> prop.render(panel, this, storage) }
+            _reProperties.forEach { prop -> prop.render(panel, this, imageProvider) }
         }
         return canvas
     }
