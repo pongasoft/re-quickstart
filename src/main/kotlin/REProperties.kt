@@ -56,12 +56,14 @@ interface IREProperty {
  * @param name the name of the property (should be unique)
  * @param widgets the list of widgets specifying on which panel this property is rendered
  * @param views the list of views specifying how the property looks on each panel */
-abstract class REProperty(val name: String,
-                          widgets: Iterable<REPropertyWidget>,
-                          views: Iterable<REPropertyView>) : IREProperty {
+abstract class REProperty(
+    val name: String,
+    widgets: Iterable<REPropertyWidget>,
+    views: Iterable<REPropertyView>
+) : IREProperty {
     /**
      * The unique path to the property (ex: `/audio_outputs/audioOutLeft`) */
-    abstract val path: String
+    open val path: String? = null
 
     /**
      * Map of panel -> view */
@@ -89,7 +91,7 @@ abstract class REProperty(val name: String,
      * The name of the node in `device2D.lua` is arbitrary but used by the widget in `hdgui2D.lua` for a given
      * panel. This method makes sure that both names are in sync. */
     fun nodeName(panel: Panel) =
-        if(_views[panel] != null && _widgets[panel] != null)
+        if (_views[panel] != null && _widgets[panel] != null)
             name
         else
             "N/A | $name not available for this panel $panel"

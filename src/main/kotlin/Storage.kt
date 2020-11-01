@@ -2,22 +2,31 @@ import org.w3c.dom.Image
 import org.w3c.files.Blob
 import kotlin.js.Promise
 
-val AUDIO_SOCKET_IMAGE = "Cable_Attachment_Audio_01_1frames"
-
-class ImageResource(val name: String, val blob: Blob, val image: Image)
-
-fun fetchImageResource(name: String, url: String): Promise<ImageResource> {
-    return fetchBlob(url).then { blob ->
-        Image.asyncLoad(org.w3c.dom.url.URL.Companion.createObjectURL(blob)).then { image ->
-            ImageResource(name, blob, image)
+class ImageResource(val name: String, val blob: Blob, val image: Image) {
+    companion object {
+        fun asyncFetch(name: String, url: String): Promise<ImageResource> {
+            return fetchBlob(url).then { blob ->
+                Image.asyncLoad(org.w3c.dom.url.URL.Companion.createObjectURL(blob)).then { image ->
+                    ImageResource(name, blob, image)
+                }
+            }.flatten()
         }
-    }.flatten()
+    }
 }
 
 interface ImageProvider {
+
+    companion object {
+        protected val AUDIO_SOCKET_IMAGE = "Cable_Attachment_Audio_01_1frames"
+        protected val PLACEHOLDER_IMAGE = "Placeholder"
+        protected val TAPE_HORIZONTAL_IMAGE = "Tape_Horizontal_1frames"
+    }
+
     fun findImageResource(name: String): ImageResource?
 
     fun getAudioSocketImageResource() = findImageResource(AUDIO_SOCKET_IMAGE)!! // return N/A image if not found instead
+    fun getPlaceholderImageResource() = findImageResource(PLACEHOLDER_IMAGE)!! // return N/A image if not found instead
+    fun getTapeHorizontalImageResource() = findImageResource(TAPE_HORIZONTAL_IMAGE)!! // return N/A image if not found instead
 }
 
 class Storage(val images: Map<String, ImageResource>) : ImageProvider {
@@ -26,8 +35,8 @@ class Storage(val images: Map<String, ImageResource>) : ImageProvider {
 
     companion object {
         fun load(): Promise<Storage> {
-            return Promise.all(arrayOf(AUDIO_SOCKET_IMAGE, "Placeholder", "Tape_Horizontal_1frames").map { name ->
-                fetchImageResource(name, "images/BuiltIn/$name.png").then { ir -> Pair(name, ir) }
+            return Promise.all(arrayOf(ImageProvider.AUDIO_SOCKET_IMAGE, ImageProvider.PLACEHOLDER_IMAGE, ImageProvider.TAPE_HORIZONTAL_IMAGE).map { name ->
+                ImageResource.asyncFetch(name, "images/BuiltIn/$name.png").then { ir -> Pair(name, ir) }
             }.toTypedArray()).then {
                 Storage(mapOf(*it))
             }

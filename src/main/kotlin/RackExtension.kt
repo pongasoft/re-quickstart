@@ -13,20 +13,23 @@ class RackExtension(val info: Info) {
     companion object {
         fun fromForm(form: HTMLFormElement): RackExtension {
             val data = FormData(form)
-            val params = data.keys().asSequence().associateBy({it}, { e -> data.get(e).toString() })
+            val params = data.keys().asSequence().associateBy({ it }, { e -> data.get(e).toString() })
 
             return RackExtension(
                 Info(
                     type = Type.valueOf(params["device_type"] ?: Type.studio_fx.toString()),
-                    sizeInU = params["device_height_ru"]?.toInt() ?: 1)
+                    sizeInU = params["device_height_ru"]?.toInt() ?: 1
+                )
             )
         }
     }
 
     enum class Type { studio_fx }
 
-    class Info(val type: Type,
-               val sizeInU: Int = 1)
+    class Info(
+        val type: Type,
+        val sizeInU: Int = 1
+    )
 
     private val _gui2D: GUI2D = GUI2D(info)
     private val _reProperties: MutableCollection<IREProperty> = mutableListOf()
@@ -47,9 +50,14 @@ class RackExtension(val info: Info) {
     fun getWidth(panel: Panel) = _gui2D.getWidth(panel)
     fun getHeight(panel: Panel) = _gui2D.getHeight(panel)
 
+    fun getTopLeft(panel: Panel) = when (panel) {
+        Panel.front, Panel.folded_front -> Pair(GUI2D.emptyMargin, GUI2D.emptyMargin)
+        Panel.back, Panel.folded_back -> Pair(GUI2D.emptyMargin + GUI2D.hiResRailWidth, GUI2D.emptyMargin)
+    }
+
     fun addREProperty(prop: IREProperty) = _reProperties.add(prop)
 
-    fun motherboard() : String {
+    fun motherboard(): String {
         return """
 format_version = "1.0"
             
@@ -59,12 +67,12 @@ ${_reProperties.map { it.motherboard() }.joinToString(separator = "\n")}
 """
     }
 
-    fun device2D() : String {
+    fun device2D(): String {
         val content = Panel.values().map { panel ->
             """
-----
+--------------------------------------------------------------------------
 -- $panel
-----
+--------------------------------------------------------------------------
 $panel = {}
 ${_reProperties.map { it.device2D(panel) }.joinToString(separator = "\n")}
 """
@@ -75,6 +83,38 @@ format_version = "2.0"
             
 $content
 """
+    }
+
+    fun hdgui2D(): String {
+        val content = Panel.values().map { panel ->
+            """
+--------------------------------------------------------------------------
+-- $panel
+--------------------------------------------------------------------------
+$panel = jbox.panel{
+  graphics = {
+    node = "TBD",
+  },
+  widgets = {
+    ${_reProperties.map { it.hdgui2D(panel) }.joinToString(separator = "\n")}
+  }
+}
+"""
+        }.joinToString(separator = "\n")
+
+        return """
+format_version = "2.0"
+            
+$content
+"""
+    }
+
+    fun generateFileTree(): Map<String, String> {
+        return mapOf(
+            Pair("motherboard_def.lua", motherboard()),
+            Pair("GUI2D/device_2d.lua", device2D()),
+            Pair("GUI2D/hdgui_2D.lua", hdgui2D()),
+        )
     }
 
     /**

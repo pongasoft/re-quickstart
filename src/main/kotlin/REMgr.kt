@@ -5,7 +5,7 @@ import kotlin.js.Promise
 
 class REMgr(private val storage: Storage) {
 
-    fun createRE(form: HTMLFormElement) : RackExtension {
+    fun createRE(form: HTMLFormElement): RackExtension {
 
         val re = RackExtension.fromForm(form)
 
@@ -19,20 +19,59 @@ class REMgr(private val storage: Storage) {
         // Main in
         re.addREProperty(
             AudioStereoPair(
-                left = AudioSocket("MainInLeft", AudioSocketType.input, centerX - margin - audioSocket.image.width, centerY - margin - audioSocket.image.height, audioSocket.name),
-                right = AudioSocket("MainInRight", AudioSocketType.input, centerX + margin, centerY - margin - audioSocket.image.height, audioSocket.name)
+                left = AudioSocket(
+                    "MainInLeft",
+                    AudioSocketType.input,
+                    centerX - margin - audioSocket.image.width,
+                    centerY - margin - audioSocket.image.height,
+                    audioSocket.name
+                ),
+                right = AudioSocket(
+                    "MainInRight",
+                    AudioSocketType.input,
+                    centerX + margin,
+                    centerY - margin - audioSocket.image.height,
+                    audioSocket.name
+                )
             )
         )
 
         // Main out
         re.addREProperty(
             AudioStereoPair(
-                left = AudioSocket("MainOutLeft", AudioSocketType.output, centerX - margin - audioSocket.image.width, centerY + margin, audioSocket.name),
-                right = AudioSocket("MainOutRight", AudioSocketType.output, centerX + margin, centerY + margin, audioSocket.name)
+                left = AudioSocket(
+                    "MainOutLeft",
+                    AudioSocketType.output,
+                    centerX - margin - audioSocket.image.width,
+                    centerY + margin,
+                    audioSocket.name
+                ),
+                right = AudioSocket(
+                    "MainOutRight",
+                    AudioSocketType.output,
+                    centerX + margin,
+                    centerY + margin,
+                    audioSocket.name
+                )
             )
         )
 
+        addDeviceNameProperty(re, margin)
+
         return re
+    }
+
+    private fun addDeviceNameProperty(re: RackExtension, margin: Int) {
+        val widgets = Panel.values().map { panel -> REDeviceNameWidget(panel) }
+
+        val img = storage.getTapeHorizontalImageResource()
+
+        val views = Panel.values().map { panel ->
+            val (x, y) = re.getTopLeft(panel)
+            REPropertyView(panel, x + margin, y + margin, img.name)
+        }
+
+        re.addREProperty(REBuiltInProperty("DeviceName", widgets, views))
     }
 
     /**
@@ -50,9 +89,8 @@ class REMgr(private val storage: Storage) {
     }
 
 
-
     companion object {
-        fun load() : Promise<REMgr> {
+        fun load(): Promise<REMgr> {
             return Storage.load().then { REMgr(it) }
         }
     }

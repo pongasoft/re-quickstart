@@ -3,10 +3,8 @@ import kotlinx.browser.window
 import kotlinx.dom.createElement
 import kotlinx.html.*
 import kotlinx.html.dom.create
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLAnchorElement
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.HTMLInputElement
+import kotlinx.html.js.onClickFunction
+import org.w3c.dom.*
 import org.w3c.dom.url.URL
 import org.w3c.files.Blob
 
@@ -164,24 +162,40 @@ val entries =
         OptionInputEntry(
             name = "long_name",
             label = "Plugin Name (Long)",
-            desc = "Long name / 40 characters max"
+            desc = "The name of the device (40 characters max). Shown in the device palette and Create menu in Reason. Also shown in the Shop. Must follow the conventions [product name] [short description] (ex: SubTractor Analog Synthesizer). See SDK documentation for more details."
         ),
         OptionInputEntry(
             name = "medium_name",
             label = "Plugin Name (Medium)",
-            desc = "Medium name / 20 characters max"
+            desc = "Shorter version of the device name (20 characters max). Used in situations where Reason \"talks\" about the device, e.g., \"Undo create Synthesizer\"."
         ),
         OptionInputEntry(
             name = "short_name",
             label = "Plugin Name (Short)",
-            desc = "Short name / 10 characters max"
+            desc = "Short version of the device name (10 characters max). Used for auto-naming new instances of the device in Reason, e.g. \"Synth 1\", \"Synth 2\"."
+        ),
+        OptionInputEntry(
+            name = "product_id",
+            label = "Product identifier",
+            desc = "Must be unique and follow the reverse domain notation convention, e.g., \"se.propellerheads.SimpleInstrument\". The only characters that are allowed are alphanumeric characters and the dot (.) and underscore (_) characters. The identifier is used in Reason Studios Rack Extension repository and databases. The identifier is never shown in the Shop. The identifier can not be changed once the product has been uploaded to the Reason Studios build server."
+        ),
+        OptionInputEntry(
+            name = "manufacturer",
+            label = "Manufacturer",
+            desc = "The name of the manufacturer. Shown in the device palette in Reason."
         ),
         OptionSelectEntry(
             name = "device_type",
             label = "Device Type",
-            options = listOf(Pair("studio_fx", "Studio FX")),
+            options = listOf(
+                Pair("instrument", "Instrument"),
+                Pair("creative_fx", "Creative FX"),
+                Pair("studio_fx", "Studio FX"),
+                Pair("helper", "Helper / Utility"),
+                Pair("note_player", "Note Player")
+            ),
             defaultValue = "studio_fx",
-            desc = "Type of the device (determines what kind of inputs/outputs and section in browser)"
+            desc = "Type of the device. Determines what kind of inputs/outputs are allowed, options for automatic routing and determines in which menu in the device palette that device is placed."
         ),
         OptionSelectEntry(
             name = "device_height_ru",
@@ -189,13 +203,6 @@ val entries =
             options = (1..9).map { Pair("$it", "${it}U") },
             defaultValue = "1",
             desc = "Height of the device (in U)"
-        ),
-        OptionInputEntry(
-            name = "enable_vst2",
-            type = InputType.checkBox,
-            label = "Enable VST2",
-            checked = false,
-            desc = "Makes the plugin compatible with both VST2 and VST3"
         ),
         OptionInputEntry(
             name = "submit",
@@ -249,13 +256,6 @@ fun init() {
 
             notification.info("Click")
 
-            notification.info("// motherboard")
-            notification.info(re.motherboard())
-
-            notification.info("**************************")
-            notification.info("// device2D")
-            notification.info(re.device2D())
-
             reMgr.renderPreview(re, Panel.back)
 
             Panel.values().forEach { panel ->
@@ -263,6 +263,26 @@ fun init() {
                     reMgr.renderPreview(re, panel)
                 })
             }
+
+            document.getElementById("re-files-preview-links")?.replaceWith(
+                document.create.div {
+                    id = "re-files-preview-links"
+                    re.generateFileTree().forEach { (path, content) ->
+                        a {
+                            onClickFunction = {
+                                document.getElementById("re-files-preview")?.replaceWith(
+                                    document.create.pre {
+                                        id = "re-files-preview"
+                                        +content
+                                    }
+                                )
+                            }
+                            +path
+                        }
+                        + " | "
+                    }
+                }
+            )
         }
 
 //
