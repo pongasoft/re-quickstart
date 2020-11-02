@@ -110,12 +110,8 @@ class REPropertyView(
      * This implementation assumes that the `panel` map has been initialized already and simply add to it */
     fun device2D(prop: REProperty): String {
         val f = if (frames > 1) ", frames=$frames " else ""
-        return """
-$panel["${prop.nodeName(panel)}"] = {
-  offset = { $offsetX, $offsetY },
-  { path = "$image" $f}
-}
-"""
+        val offset = if(offsetX != 0 || offsetY != 0) "offset = { $offsetX, $offsetY }, " else ""
+        return """$panel["${prop.nodeName(panel)}"] = { $offset{ path = "$image" $f} }"""
     }
 
     fun render(ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
