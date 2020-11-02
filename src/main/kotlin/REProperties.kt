@@ -121,12 +121,10 @@ abstract class REPropertyWidget(
     }
 
     fun render(ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
-        console.log("rendering $image")
         imageProvider.findImageResource(image)?.image?.let {
             val src = it
             val w = src.width.toDouble()
             val h = src.height / frames.toDouble() // height (first frame)
-            console.log("rendering / 0,0 ${w}x$h $offsetX, $offsetY ")
             ctx.drawImage(
                 src,
                 0.toDouble(), // src x

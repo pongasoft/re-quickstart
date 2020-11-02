@@ -22,6 +22,23 @@ fun HTMLInputElement.addListener(type: String, block: HTMLInputElement.(event: E
     addEventListener(type, { event -> block(event) })
 }
 
+/**
+ * Shortcut for change event */
+fun HTMLInputElement.onChange(block: HTMLInputElement.(event: Event) -> Unit) {
+  addListener("change", block)
+}
+
+/**
+ * Add a __computedValue field to the element to store the value that was computed so that when it gets
+ * recomputed it can be updated but ONLY in the event the user has not manually modified it
+ */
+fun HTMLInputElement.setComputedValue(computedValue: String) {
+  val dynElt: dynamic = this
+  if (value.isEmpty() || value == dynElt.__computedValue)
+    value = computedValue
+  dynElt.__computedValue = computedValue
+}
+
 /*
  * Defines the api used by js iterators (which can be used in for..of construct) */
 external interface JSIteratorNextResult<T> {

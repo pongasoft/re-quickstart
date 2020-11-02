@@ -175,14 +175,14 @@ val entries =
             desc = "Short version of the device name (10 characters max). Used for auto-naming new instances of the device in Reason, e.g. \"Synth 1\", \"Synth 2\"."
         ),
         OptionInputEntry(
-            name = "product_id",
-            label = "Product identifier",
-            desc = "Must be unique and follow the reverse domain notation convention, e.g., \"se.propellerheads.SimpleInstrument\". The only characters that are allowed are alphanumeric characters and the dot (.) and underscore (_) characters. The identifier is used in Reason Studios Rack Extension repository and databases. The identifier is never shown in the Shop. The identifier can not be changed once the product has been uploaded to the Reason Studios build server."
-        ),
-        OptionInputEntry(
             name = "manufacturer",
             label = "Manufacturer",
             desc = "The name of the manufacturer. Shown in the device palette in Reason."
+        ),
+        OptionInputEntry(
+            name = "product_id",
+            label = "Product identifier",
+            desc = "Must be unique and follow the reverse domain notation convention, e.g., \"se.propellerheads.SimpleInstrument\". The only characters that are allowed are alphanumeric characters and the dot (.) and underscore (_) characters. The identifier is used in Reason Studios Rack Extension repository and databases. The identifier is never shown in the Shop. The identifier can not be changed once the product has been uploaded to the Reason Studios build server."
         ),
         OptionSelectEntry(
             name = "device_type",
@@ -208,7 +208,7 @@ val entries =
             name = "submit",
             type = InputType.button,
             defaultValue = "Generate blank plugin",
-            disabled = false
+            disabled = true
         )
     )
 
@@ -240,8 +240,12 @@ fun init() {
             )
         )
 
-    val elements = entries.associateBy({ it.name }) { entry ->
+    val elements = entries.filterIsInstance<OptionInputEntry>().associateBy({ it.name }) { entry ->
         document.getElementById(entry.name) as? HTMLInputElement
+    }
+
+    fun maybeEnableSubmit() {
+        elements["submit"]?.disabled = elements.values.any { it?.value?.isEmpty() ?: false }
     }
 
     val notification = Notification("notification")
@@ -295,6 +299,26 @@ fun init() {
 //            }
 ////            downloadAnchor.click()
 //        }
+    }
+
+    elements["long_name"]?.onChange {
+        elements["medium_name"]?.setComputedValue(value.substring(0..19))
+        elements["short_name"]?.setComputedValue(value.substring(0..9))
+    }
+
+    elements["manufacturer"]?.onChange {
+        elements["short_name"]?.value?.let { shortName ->
+            if(shortName.isNotEmpty())
+            {
+                val regex = Regex("[^A-Za-z0-9._]")
+                elements["product_id"]?.setComputedValue("com.${regex.replace(value, "")}.${regex.replace(shortName, "")}")
+            }
+        }
+    }
+
+    elements.forEach { (name, elt) ->
+        if(name != "submit")
+            elt?.onChange { maybeEnableSubmit() }
     }
 }
 
