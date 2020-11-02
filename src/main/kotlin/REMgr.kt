@@ -62,16 +62,17 @@ class REMgr(private val storage: Storage) {
     }
 
     private fun addDeviceNameProperty(re: RackExtension, margin: Int) {
-        val widgets = Panel.values().map { panel -> REDeviceNameWidget(panel) }
+
+        val prop = REBuiltInProperty("DeviceName")
 
         val img = storage.getTapeHorizontalImageResource()
 
-        val views = Panel.values().map { panel ->
+        Panel.values().forEach { panel ->
             val (x, y) = re.getTopLeft(panel)
-            REPropertyView(panel, x + margin, y + margin, img.name)
+            prop.addWidget(panel, REPropertyWidget.Type.device_name, img.name, x+ margin, y + margin)
         }
 
-        re.addREProperty(REBuiltInProperty("DeviceName", widgets, views))
+        re.addREProperty(prop)
     }
 
     /**

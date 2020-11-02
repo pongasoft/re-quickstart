@@ -13,7 +13,11 @@ class AudioSocket(
     offsetX: Int,
     offsetY: Int,
     image: String
-) : REProperty(name, listOf(AudioSocketWidget(type)), listOf(REPropertyView(Panel.back, offsetX, offsetY, image))) {
+) : REProperty(name) {
+
+    init {
+        addWidget(AudioSocketWidget(type, this, offsetX, offsetY, image))
+    }
 
     override val path: String
         get() = "/audio_${type}s/$name"
@@ -29,16 +33,19 @@ audio_${type}s["$name"] = jbox.audio_$type {
 
 /**
  * Audio sockets can only be put on the back panel */
-class AudioSocketWidget(val type: AudioSocketType) : REPropertyWidget(Panel.back) {
-    override fun hdgui2D(prop: REProperty): String {
-        return """
-    --- ${prop.name} | audio $type socket
-    jbox.audio_${type}_socket {
-      graphics = {
-        node = "${prop.nodeName(panel)}",
-      },
-      socket = "${prop.path}",
-    },
+class AudioSocketWidget(val type: AudioSocketType,
+                        prop: REProperty,
+                        offsetX: Int,
+                        offsetY: Int,
+                        image: String) : REPropertyWidget(Panel.back, prop, offsetX, offsetY, image) {
+    override fun hdgui2D(): String {
+        return """--- ${prop.name} | audio $type socket
+${panel}_widgets[#${panel}_widgets + 1] = jbox.audio_${type}_socket {
+  graphics = {
+    node = "$nodeName",
+  },
+  socket = "${prop.path}"
+}
 """
     }
 }

@@ -74,6 +74,9 @@ ${_reProperties.map { it.motherboard() }.joinToString(separator = "\n")}
 -- $panel
 --------------------------------------------------------------------------
 $panel = {}
+
+-- Background graphic
+$panel["${panelNodeName(panel)}"] = "${_gui2D.getPanelImageName(panel).removeSuffix(".png")}"
 ${_reProperties.map { it.device2D(panel) }.joinToString(separator = "\n")}
 """
         }.joinToString(separator = "\n")
@@ -91,13 +94,13 @@ $content
 --------------------------------------------------------------------------
 -- $panel
 --------------------------------------------------------------------------
+${panel}_widgets = {}
+${_reProperties.map { it.hdgui2D(panel) }.joinToString(separator = "\n")}
 $panel = jbox.panel{
   graphics = {
-    node = "TBD",
+    node = "${panelNodeName(panel)}",
   },
-  widgets = {
-    ${_reProperties.map { it.hdgui2D(panel) }.joinToString(separator = "\n")}
-  }
+  widgets = ${panel}_widgets
 }
 """
         }.joinToString(separator = "\n")
@@ -145,4 +148,6 @@ $content
             Pair("$root.zip", it as Blob)
         }
     }
+
+    private fun panelNodeName(panel: Panel) = "Panel_${panel}_Bg"
 }

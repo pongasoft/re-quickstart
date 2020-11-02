@@ -56,62 +56,68 @@ interface IREProperty {
  * @param name the name of the property (should be unique)
  * @param widgets the list of widgets specifying on which panel this property is rendered
  * @param views the list of views specifying how the property looks on each panel */
-abstract class REProperty(
-    val name: String,
-    widgets: Iterable<REPropertyWidget>,
-    views: Iterable<REPropertyView>
-) : IREProperty {
+abstract class REProperty(val name: String) : IREProperty {
     /**
      * The unique path to the property (ex: `/audio_outputs/audioOutLeft`) */
     open val path: String? = null
 
     /**
-     * Map of panel -> view */
-    private val _views = views.associateBy { it.panel }
-
-    /**
      * Map of panel -> widget */
-    private val _widgets = widgets.associateBy { it.panel }
+    private val _widgets: MutableCollection<REPropertyWidget> = mutableListOf()
+
+    fun addWidget(
+        panel: Panel,
+        type: REPropertyWidget.Type,
+        image: String,
+        offsetX: Int = 0,
+        offsetY: Int = 0,
+        frames: Int = 1
+    ) = addWidget(
+        when (type) {
+            REPropertyWidget.Type.device_name -> REDeviceNameWidget(panel, this, offsetX, offsetY, image)
+        }
+    )
+
+    fun widgetCount(panel: Panel) = _widgets.count { it.panel == panel }
+
+    protected fun addWidget(widget: REPropertyWidget) = _widgets.add(widget)
 
     // device2D
-    override fun device2D(panel: Panel): String {
-        return _views[panel]?.device2D(this) ?: ""
-    }
+    override fun device2D(panel: Panel) =
+        _widgets.filter { it.panel == panel }.joinToString(separator = "\n") { it.device2D() }
 
     // hdgui2D
-    override fun hdgui2D(panel: Panel): String {
-        return _widgets[panel]?.hdgui2D(this) ?: ""
-    }
+    override fun hdgui2D(panel: Panel) =
+        _widgets.filter { it.panel == panel }.joinToString(separator = "\n") { it.hdgui2D() }
 
+    // render
     override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
-        _views[panel]?.render(ctx, imageProvider)
+        _widgets.filter { it.panel == panel }.forEach { it.render(ctx, imageProvider) }
     }
-
-    /**
-     * The name of the node in `device2D.lua` is arbitrary but used by the widget in `hdgui2D.lua` for a given
-     * panel. This method makes sure that both names are in sync. */
-    fun nodeName(panel: Panel) =
-        if (_views[panel] != null && _widgets[panel] != null)
-            name
-        else
-            "N/A | $name not available for this panel $panel"
 }
 
 /**
- * Represents the view of a property in a given panel (`device2D.lua`) */
-class REPropertyView(
+ * Represents the widget for a property on a given panel */
+abstract class REPropertyWidget(
     val panel: Panel,
+    val prop: REProperty,
     val offsetX: Int,
     val offsetY: Int,
     val image: String,
     val frames: Int = 1
 ) {
+    enum class Type {
+        device_name
+    }
+
+    protected val nodeName = if(prop.widgetCount(panel) == 0) prop.name else "${prop.name}_${prop.widgetCount(panel)}"
+
     /**
      * This implementation assumes that the `panel` map has been initialized already and simply add to it */
-    fun device2D(prop: REProperty): String {
+    fun device2D(): String {
         val f = if (frames > 1) ", frames=$frames " else ""
-        val offset = if(offsetX != 0 || offsetY != 0) "offset = { $offsetX, $offsetY }, " else ""
-        return """$panel["${prop.nodeName(panel)}"] = { $offset{ path = "$image" $f} }"""
+        val offset = if (offsetX != 0 || offsetY != 0) "offset = { $offsetX, $offsetY }, " else ""
+        return """$panel["$nodeName"] = { $offset{ path = "$image" $f} }"""
     }
 
     fun render(ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
@@ -134,13 +140,9 @@ class REPropertyView(
             )
         }
     }
-}
 
-/**
- * Represents the widget for a property on a given panel */
-abstract class REPropertyWidget(val panel: Panel) {
     /**
      * @return the widget for the property on the given panel */
-    abstract fun hdgui2D(prop: REProperty): String
+    abstract fun hdgui2D(): String
 }
 
