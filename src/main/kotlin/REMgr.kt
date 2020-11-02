@@ -11,6 +11,9 @@ class REMgr(private val storage: Storage) {
 
         val margin = 10
 
+        addDeviceNameProperty(re, margin)
+        addPlaceholderProperty(re)
+
         val audioSocket = storage.getAudioSocketImageResource()
 
         val centerX = re.getWidth(Panel.back) / 2
@@ -56,22 +59,31 @@ class REMgr(private val storage: Storage) {
             )
         )
 
-        addDeviceNameProperty(re, margin)
 
         return re
     }
 
+    /**
+     * Add the device name (tape) to all panels on the top left (accounting for the rails in the back) */
     private fun addDeviceNameProperty(re: RackExtension, margin: Int) {
-
         val prop = REBuiltInProperty("DeviceName")
-
         val img = storage.getTapeHorizontalImageResource()
-
         Panel.values().forEach { panel ->
             val (x, y) = re.getTopLeft(panel)
-            prop.addWidget(panel, REPropertyWidget.Type.device_name, img.name, x+ margin, y + margin)
+            prop.addWidget(panel, REPropertyWidget.Type.device_name, img.name, x + margin, y + margin)
         }
+        re.addREProperty(prop)
+    }
 
+    /**
+     * Adds the placeholder on the back panel */
+    private fun addPlaceholderProperty(re: RackExtension) {
+        val img = storage.getPlaceholderImageResource()
+        val prop = REPlaceholderProperty("Placeholder",
+            re.getWidth(Panel.back) - img.image.width,
+            re.getHeight(Panel.back) - img.image.height,
+            img.name
+        )
         re.addREProperty(prop)
     }
 

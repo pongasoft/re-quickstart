@@ -23,11 +23,9 @@ class AudioSocket(
         get() = "/audio_${type}s/$name"
 
     override fun motherboard(): String {
-        return """
-audio_${type}s["$name"] = jbox.audio_$type {
+        return """audio_${type}s["$name"] = jbox.audio_$type {
   ui_name = jbox.ui_text("$name")
-}
-"""
+}"""
     }
 }
 
@@ -45,8 +43,7 @@ ${panel}_widgets[#${panel}_widgets + 1] = jbox.audio_${type}_socket {
     node = "$nodeName",
   },
   socket = "${prop.path}"
-}
-"""
+}"""
     }
 }
 
@@ -58,31 +55,28 @@ class AudioStereoPair(val left: AudioSocket, val right: AudioSocket) : IREProper
      * Adds a `add_stereo_audio_routing_pair` call so that Reason automatically wires both cables
      * when one is connected */
     override fun motherboard(): String {
-        return """
+        return """--------------------------------------------------------------------------
 -- stereo pair ${left.name} / ${right.name}            
+--------------------------------------------------------------------------
 ${left.motherboard()}
 ${right.motherboard()}
+
 jbox.add_stereo_audio_routing_pair {
   left = "${left.path}",
   right = "${right.path}"
-}
-"""
+}"""
     }
 
     // device2D
     override fun device2D(panel: Panel): String {
-        return if (panel == Panel.back) """
-${left.device2D(panel)}            
-${right.device2D(panel)}            
-""" else ""
+        return if (panel == Panel.back) """${left.device2D(panel)}            
+${right.device2D(panel)}""" else ""
     }
 
     // hdgui2D
     override fun hdgui2D(panel: Panel): String {
-        return if (panel == Panel.back) """
-${left.hdgui2D(panel)}            
-${right.hdgui2D(panel)}            
-""" else ""
+        return if (panel == Panel.back) """${left.hdgui2D(panel)}            
+${right.hdgui2D(panel)}""" else ""
     }
 
     override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {

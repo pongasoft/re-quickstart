@@ -63,7 +63,8 @@ format_version = "1.0"
             
 audio_outputs = {}
 audio_inputs = {}
-${_reProperties.map { it.motherboard() }.joinToString(separator = "\n")}
+
+${_reProperties.map { it.motherboard() }.filter { it != "" }.joinToString(separator = "\n\n")}
 """
     }
 
@@ -77,15 +78,14 @@ $panel = {}
 
 -- Background graphic
 $panel["${panelNodeName(panel)}"] = "${_gui2D.getPanelImageName(panel).removeSuffix(".png")}"
-${_reProperties.map { it.device2D(panel) }.joinToString(separator = "\n")}
-"""
+
+${_reProperties.map { it.device2D(panel) }.filter { it != "" }.joinToString(separator = "\n")}"""
         }.joinToString(separator = "\n")
 
         return """
 format_version = "2.0"
             
-$content
-"""
+$content"""
     }
 
     fun hdgui2D(): String {
@@ -95,14 +95,15 @@ $content
 -- $panel
 --------------------------------------------------------------------------
 ${panel}_widgets = {}
-${_reProperties.map { it.hdgui2D(panel) }.joinToString(separator = "\n")}
+
+${_reProperties.map { it.hdgui2D(panel) }.filter { it != "" }.joinToString(separator = "\n\n")}
+
 $panel = jbox.panel{
   graphics = {
     node = "${panelNodeName(panel)}",
   },
   widgets = ${panel}_widgets
-}
-"""
+}"""
         }.joinToString(separator = "\n")
 
         return """
