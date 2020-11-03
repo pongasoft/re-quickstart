@@ -17,6 +17,12 @@ class RackExtension(val info: Info) {
 
             return RackExtension(
                 Info(
+                    longName = params["long_name"] ?: "Blank Plugin",
+                    mediumName = params["medium_name"] ?: "Blank Plugin",
+                    shortName = params["short_name"] ?: "Blank",
+                    manufacturer = params["manufacturer"] ?: "acme",
+                    productId = params["product_id"] ?: "com.acme.Blank",
+                    version = params["version"] ?: "1.0.0d1",
                     type = Type.valueOf(params["device_type"] ?: Type.studio_fx.toString()),
                     sizeInU = params["device_height_ru"]?.toInt() ?: 1
                 )
@@ -24,9 +30,15 @@ class RackExtension(val info: Info) {
         }
     }
 
-    enum class Type { studio_fx }
+    enum class Type { instrument, creative_fx, studio_fx, helper, note_player }
 
     class Info(
+        val longName: String,
+        val mediumName: String,
+        val shortName: String,
+        val manufacturer: String,
+        val productId: String,
+        val version: String,
         val type: Type,
         val sizeInU: Int = 1
     )
@@ -47,7 +59,7 @@ class RackExtension(val info: Info) {
         return canvas
     }
 
-    fun getWidth(panel: Panel) = _gui2D.getWidth(panel)
+    fun getWidth(panel: Panel) = _gui2D.getWidth()
     fun getHeight(panel: Panel) = _gui2D.getHeight(panel)
 
     fun getTopLeft(panel: Panel) = when (panel) {

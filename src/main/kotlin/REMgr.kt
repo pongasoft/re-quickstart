@@ -19,45 +19,74 @@ class REMgr(private val storage: Storage) {
         val centerX = re.getWidth(Panel.back) / 2
         val centerY = re.getHeight(Panel.back) / 2
 
-        // Main in
-        re.addREProperty(
-            AudioStereoPair(
-                left = AudioSocket(
-                    "MainInLeft",
-                    AudioSocketType.input,
-                    centerX - margin - audioSocket.image.width,
-                    centerY - margin - audioSocket.image.height,
-                    audioSocket.name
-                ),
-                right = AudioSocket(
-                    "MainInRight",
-                    AudioSocketType.input,
-                    centerX + margin,
-                    centerY - margin - audioSocket.image.height,
-                    audioSocket.name
+        when(re.info.type) {
+            // Effect: stereo in / stereo out
+            RackExtension.Type.studio_fx, RackExtension.Type.creative_fx -> {
+                // Main in
+                re.addREProperty(
+                    AudioStereoPair(
+                        left = AudioSocket(
+                            "MainInLeft",
+                            AudioSocketType.input,
+                            centerX - margin - audioSocket.image.width,
+                            centerY - margin - audioSocket.image.height,
+                            audioSocket.name
+                        ),
+                        right = AudioSocket(
+                            "MainInRight",
+                            AudioSocketType.input,
+                            centerX + margin,
+                            centerY - margin - audioSocket.image.height,
+                            audioSocket.name
+                        )
+                    )
                 )
-            )
-        )
 
-        // Main out
-        re.addREProperty(
-            AudioStereoPair(
-                left = AudioSocket(
-                    "MainOutLeft",
-                    AudioSocketType.output,
-                    centerX - margin - audioSocket.image.width,
-                    centerY + margin,
-                    audioSocket.name
-                ),
-                right = AudioSocket(
-                    "MainOutRight",
-                    AudioSocketType.output,
-                    centerX + margin,
-                    centerY + margin,
-                    audioSocket.name
+                // Main out
+                re.addREProperty(
+                    AudioStereoPair(
+                        left = AudioSocket(
+                            "MainOutLeft",
+                            AudioSocketType.output,
+                            centerX - margin - audioSocket.image.width,
+                            centerY + margin,
+                            audioSocket.name
+                        ),
+                        right = AudioSocket(
+                            "MainOutRight",
+                            AudioSocketType.output,
+                            centerX + margin,
+                            centerY + margin,
+                            audioSocket.name
+                        )
+                    )
                 )
-            )
-        )
+            }
+            // Instrument : stereo out
+            RackExtension.Type.instrument -> {
+                // Main out
+                re.addREProperty(
+                    AudioStereoPair(
+                        left = AudioSocket(
+                            "MainOutLeft",
+                            AudioSocketType.output,
+                            centerX - margin - audioSocket.image.width,
+                            centerY + margin - audioSocket.image.height / 2,
+                            audioSocket.name
+                        ),
+                        right = AudioSocket(
+                            "MainOutRight",
+                            AudioSocketType.output,
+                            centerX + margin,
+                            centerY + margin - audioSocket.image.height / 2,
+                            audioSocket.name
+                        )
+                    )
+                )
+            }
+            // Helper/Note player: no in or out
+            RackExtension.Type.helper, RackExtension.Type.note_player -> {}
+        }
 
 
         return re

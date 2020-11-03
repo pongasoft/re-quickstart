@@ -162,22 +162,25 @@ val entries =
         OptionInputEntry(
             name = "long_name",
             label = "Plugin Name (Long)",
-            desc = "The name of the device (40 characters max). Shown in the device palette and Create menu in Reason. Also shown in the Shop. Must follow the conventions [product name] [short description] (ex: SubTractor Analog Synthesizer). See SDK documentation for more details."
-        ),
-        OptionInputEntry(
-            name = "medium_name",
-            label = "Plugin Name (Medium)",
-            desc = "Shorter version of the device name (20 characters max). Used in situations where Reason \"talks\" about the device, e.g., \"Undo create Synthesizer\"."
-        ),
-        OptionInputEntry(
-            name = "short_name",
-            label = "Plugin Name (Short)",
-            desc = "Short version of the device name (10 characters max). Used for auto-naming new instances of the device in Reason, e.g. \"Synth 1\", \"Synth 2\"."
+            maxLength = 40,
+            desc = "The name of the device (40 characters max). Shown in the device palette and Create menu in Reason. Also shown in the Shop. Must follow the conventions [product name] [short description] (ex: SubTractor Analog Synthesizer). See SDK documentation for more details.",
         ),
         OptionInputEntry(
             name = "manufacturer",
             label = "Manufacturer",
             desc = "The name of the manufacturer. Shown in the device palette in Reason."
+        ),
+        OptionInputEntry(
+            name = "medium_name",
+            label = "Plugin Name (Medium)",
+            maxLength = 20,
+            desc = "Shorter version of the device name (20 characters max). Used in situations where Reason \"talks\" about the device, e.g., \"Undo create Synthesizer\"."
+        ),
+        OptionInputEntry(
+            name = "short_name",
+            label = "Plugin Name (Short)",
+            maxLength = 10,
+            desc = "Short version of the device name (10 characters max). Used for auto-naming new instances of the device in Reason, e.g. \"Synth 1\", \"Synth 2\"."
         ),
         OptionInputEntry(
             name = "product_id",
@@ -311,7 +314,7 @@ fun init() {
             if(shortName.isNotEmpty())
             {
                 val regex = Regex("[^A-Za-z0-9._]")
-                elements["product_id"]?.setComputedValue("com.${regex.replace(value, "")}.${regex.replace(shortName, "")}")
+                elements["product_id"]?.setComputedValue("com.${regex.replace(value, "").toLowerCase()}.${regex.replace(shortName, "")}")
             }
         }
     }
