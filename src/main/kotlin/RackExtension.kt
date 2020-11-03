@@ -46,11 +46,11 @@ class RackExtension(val info: Info) {
     private val _gui2D: GUI2D = GUI2D(info)
     private val _reProperties: MutableCollection<IREProperty> = mutableListOf()
 
-    /**
-     * generateFrontPanelImgSrc */
-    fun generatePanelImgSrc(panel: Panel) = _gui2D.generatePanelElement(panel).toDataURL(type = "image/png")
+    fun getPanelImageName(panel: Panel) = _gui2D.getPanelImageName(panel)
 
-    fun renderPanel(panel: Panel, imageProvider: ImageProvider): HTMLCanvasElement {
+    fun generatePanel(panel: Panel) = _gui2D.generatePanelElement(panel)
+
+    fun generateFullPanel(panel: Panel, imageProvider: ImageProvider): HTMLCanvasElement {
         val canvas = _gui2D.generatePanelElement(panel)
         with(canvas.getContext("2d")) {
             this as CanvasRenderingContext2D
@@ -59,7 +59,7 @@ class RackExtension(val info: Info) {
         return canvas
     }
 
-    fun getWidth(panel: Panel) = _gui2D.getWidth()
+    fun getWidth() = _gui2D.getWidth()
     fun getHeight(panel: Panel) = _gui2D.getHeight(panel)
 
     fun getTopLeft(panel: Panel) = when (panel) {
@@ -68,6 +68,12 @@ class RackExtension(val info: Info) {
     }
 
     fun addREProperty(prop: IREProperty) = _reProperties.add(prop)
+
+    fun getPropertyImages(): List<String> {
+        val imgs = mutableSetOf<String>()
+        _reProperties.forEach { imgs.addAll(it.getImages()) }
+        return imgs.sorted()
+    }
 
     fun motherboard(): String {
         return """
@@ -123,14 +129,6 @@ format_version = "2.0"
             
 $content
 """
-    }
-
-    fun generateFileTree(): Map<String, String> {
-        return mapOf(
-            Pair("motherboard_def.lua", motherboard()),
-            Pair("GUI2D/device_2d.lua", device2D()),
-            Pair("GUI2D/hdgui_2D.lua", hdgui2D()),
-        )
     }
 
     /**

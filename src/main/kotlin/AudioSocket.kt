@@ -83,4 +83,6 @@ ${right.hdgui2D(panel)}""" else ""
         left.render(panel, ctx, imageProvider)
         right.render(panel, ctx, imageProvider)
     }
+
+    override fun getImages(): List<String> = left.getImages() + right.getImages()
 }

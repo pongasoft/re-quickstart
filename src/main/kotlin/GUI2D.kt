@@ -50,7 +50,7 @@ class GUI2D(
                 val text = "${info.longName} | ${info.manufacturer} | ${info.version}"
                 val metrics = measureText(text)
                 fillStyle = textColor
-                fillText(text, (width - metrics.width) / 2.0, height - metrics.actualBoundingBoxDescent)
+                fillText(text, (width - metrics.width) / 2.0, height - metrics.actualBoundingBoxDescent - 5)
             }
             this
         }

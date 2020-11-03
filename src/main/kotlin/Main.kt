@@ -263,30 +263,36 @@ fun init() {
 
             notification.info("Click")
 
-            reMgr.renderPreview(re, Panel.back)
+            fun renderPreview(re: RackExtension, panel: Panel) {
+                val preview = reMgr.generatePreview(re, panel)
+                preview.id = "re-preview"
+                document.getElementById("re-preview")?.replaceWith(preview)
+            }
+
+            renderPreview(re, Panel.front)
 
             Panel.values().forEach { panel ->
                 (document.getElementById("re-preview-$panel") as? HTMLAnchorElement)?.addEventListener("click", {
-                    reMgr.renderPreview(re, panel)
+                    renderPreview(re, panel)
                 })
             }
 
             document.getElementById("re-files-preview-links")?.replaceWith(
                 document.create.div {
                     id = "re-files-preview-links"
-                    re.generateFileTree().forEach { (path, content) ->
-                        a {
-                            onClickFunction = {
-                                document.getElementById("re-files-preview")?.replaceWith(
-                                    document.create.pre {
-                                        id = "re-files-preview"
-                                        +content
+                    ul {
+                        reMgr.generateFileTree(re).forEach { (path, contentGenerator) ->
+                            li {
+                                a {
+                                    onClickFunction = {
+                                        val content = contentGenerator()
+                                        content.id = "re-files-preview-content"
+                                        document.getElementById("re-files-preview-content")?.replaceWith(content)
                                     }
-                                )
+                                    +path
+                                }
                             }
-                            +path
                         }
-                        + " | "
                     }
                 }
             )

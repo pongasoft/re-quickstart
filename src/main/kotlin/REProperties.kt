@@ -47,6 +47,8 @@ interface IREProperty {
     fun hdgui2D(panel: Panel): String
 
     fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider)
+
+    fun getImages() : List<String>
 }
 
 /**
@@ -77,6 +79,8 @@ abstract class REProperty(val name: String) : IREProperty {
             REPropertyWidget.Type.device_name -> REDeviceNameWidget(panel, this, offsetX, offsetY, image)
         }
     )
+
+    override fun getImages() = _widgets.map { it.image }
 
     fun widgetCount(panel: Panel) = _widgets.count { it.panel == panel }
 
