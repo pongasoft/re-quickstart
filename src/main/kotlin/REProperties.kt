@@ -49,6 +49,8 @@ interface IREProperty {
     fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider)
 
     fun getImages() : List<String>
+
+    fun rtInputSetup(): List<String>
 }
 
 /**
@@ -93,6 +95,8 @@ abstract class REProperty(val name: String) : IREProperty {
     // hdgui2D
     override fun hdgui2D(panel: Panel) =
         _widgets.filter { it.panel == panel }.joinToString(separator = "\n") { it.hdgui2D() }
+
+    override fun rtInputSetup(): List<String> = emptyList()
 
     // render
     override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {

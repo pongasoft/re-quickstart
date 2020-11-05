@@ -27,6 +27,8 @@ class AudioSocket(
   ui_name = jbox.ui_text("$name")
 }"""
     }
+
+    override fun rtInputSetup() = listOf("$path/connected")
 }
 
 /**
@@ -78,6 +80,8 @@ ${right.device2D(panel)}""" else ""
         return if (panel == Panel.back) """${left.hdgui2D(panel)}            
 ${right.hdgui2D(panel)}""" else ""
     }
+
+    override fun rtInputSetup() = left.rtInputSetup() + right.rtInputSetup()
 
     override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
         left.render(panel, ctx, imageProvider)

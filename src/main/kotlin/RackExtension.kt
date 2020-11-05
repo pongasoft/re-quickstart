@@ -114,10 +114,85 @@ automation_highlight_color = {r = 60, g = 255, b = 2}
         return """
 format_version = "1.0"
             
+--------------------------------------------------------------------------
+-- Custom properties
+--------------------------------------------------------------------------
+local documentOwnerProperties = {}
+local rtOwnerProperties = {}
+local guiOwnerProperties = {}
+
+custom_properties = jbox.property_set {
+  gui_owner = {
+    properties = guiOwnerProperties
+  },
+
+  document_owner = {
+    properties = documentOwnerProperties
+  },
+	
+  rtc_owner = {
+    properties = {
+      instance = jbox.native_object{ },
+    }
+  },
+	
+  rt_owner = {
+    properties = rtOwnerProperties
+  }
+}
+
+--------------------------------------------------------------------------
+-- Audio Inputs/Outputs
+--------------------------------------------------------------------------
+
 audio_outputs = {}
 audio_inputs = {}
 
 ${_reProperties.map { it.motherboard() }.filter { it != "" }.joinToString(separator = "\n\n")}
+
+--------------------------------------------------------------------------
+-- CV Inputs/Outputs
+--------------------------------------------------------------------------
+cv_inputs = {}
+cv_outputs = {}
+
+"""
+    }
+
+    fun realtimeControllerLua(): String {
+        return """
+format_version = "1.0"
+
+rtc_bindings = {
+  -- this will initialize the C++ object
+  { source = "/environment/system_sample_rate", dest = "/global_rtc/init_instance" },
+}
+
+global_rtc = {
+  init_instance = function(source_property_path, new_value)
+    local sample_rate = jbox.load_property("/environment/system_sample_rate")
+    local new_no = jbox.make_native_object_rw("Instance", { sample_rate })
+    jbox.store_property("/custom_properties/instance", new_no);
+  end,
+}
+
+rt_input_setup = {
+  notify = {
+${_reProperties.flatMap { it.rtInputSetup() }.map { "    \"$it\""}. joinToString(separator = ",\n")}
+  }
+}
+
+sample_rate_setup = {
+  native = {
+    22050,
+    44100,
+    48000,
+    88200,
+    96000,
+    192000
+  },
+
+}
 """
     }
 
