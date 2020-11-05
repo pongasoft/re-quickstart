@@ -157,6 +157,7 @@ class REMgr(private val storage: Storage) {
             Pair("info.lua", { generateTextContent(re.infoLua()) }),
             Pair("motherboard_def.lua", { generateTextContent(re.motherboardLua()) }),
             Pair("realtime_controller.lua", { generateTextContent(re.realtimeControllerLua()) }),
+            Pair("Resources/English/texts.lua", { generateTextContent(re.textsLua()) }),
             Pair("GUI2D/device_2d.lua", { generateTextContent(re.device2DLua()) }),
             Pair("GUI2D/hdgui_2D.lua", { generateTextContent(re.hdgui2DLua()) }),
             *Panel.values().map {

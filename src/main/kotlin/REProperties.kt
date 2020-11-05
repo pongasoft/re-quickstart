@@ -51,6 +51,8 @@ interface IREProperty {
     fun getImages() : List<String>
 
     fun rtInputSetup(): List<String>
+
+    fun textResources() : Map<String, String>
 }
 
 /**
@@ -97,6 +99,8 @@ abstract class REProperty(val name: String) : IREProperty {
         _widgets.filter { it.panel == panel }.joinToString(separator = "\n") { it.hdgui2D() }
 
     override fun rtInputSetup(): List<String> = emptyList()
+
+    override fun textResources(): Map<String, String> = mapOf(Pair("$name ui_name", "TBD [$name ui_name]"))
 
     // render
     override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {

@@ -24,7 +24,7 @@ class AudioSocket(
 
     override fun motherboard(): String {
         return """audio_${type}s["$name"] = jbox.audio_$type {
-  ui_name = jbox.ui_text("$name")
+  ui_name = jbox.ui_text("$name ui_name")
 }"""
     }
 
@@ -82,6 +82,8 @@ ${right.hdgui2D(panel)}""" else ""
     }
 
     override fun rtInputSetup() = left.rtInputSetup() + right.rtInputSetup()
+
+    override fun textResources() = left.textResources() + right.textResources()
 
     override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
         left.render(panel, ctx, imageProvider)

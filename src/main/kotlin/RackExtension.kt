@@ -178,7 +178,7 @@ global_rtc = {
 
 rt_input_setup = {
   notify = {
-${_reProperties.flatMap { it.rtInputSetup() }.map { "    \"$it\""}. joinToString(separator = ",\n")}
+${_reProperties.flatMap { it.rtInputSetup() }.joinToString(separator = ",\n") { "    \"$it\"" }}
   }
 }
 
@@ -195,6 +195,15 @@ sample_rate_setup = {
 }
 """
     }
+
+    fun textsLua() = """
+format_version = "1.0"
+
+-- english
+texts = {
+${_reProperties.flatMap { it.textResources().entries }.joinToString(separator = ",\n") { "    [\"${it.key}\"] = \"${it.value}\"" }}
+}
+"""
 
     fun device2DLua(): String {
         val content = Panel.values().map { panel ->

@@ -4,6 +4,8 @@ open class REBuiltInProperty(name: String) : REProperty(name) {
     /**
      * @return the definition of the property defined in the `motherboard_def.lua` file */
     override fun motherboard(): String = ""
+
+    override fun textResources() = emptyMap<String, String>()
 }
 
 /**
