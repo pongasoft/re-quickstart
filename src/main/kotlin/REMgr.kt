@@ -154,13 +154,16 @@ class REMgr(private val storage: Storage) {
 
     fun generateFileTree(re: RackExtension): Map<String, () -> HTMLElement> {
         return mapOf(
-            Pair("motherboard_def.lua", { generateTextContent(re.motherboard()) }),
-            Pair("GUI2D/device_2d.lua", { generateTextContent(re.device2D()) }),
-            Pair("GUI2D/hdgui_2D.lua", { generateTextContent(re.hdgui2D()) }),
+            Pair("info.lua", { generateTextContent(re.infoLua()) }),
+            Pair("motherboard_def.lua", { generateTextContent(re.motherboardLua()) }),
+            Pair("GUI2D/device_2d.lua", { generateTextContent(re.device2DLua()) }),
+            Pair("GUI2D/hdgui_2D.lua", { generateTextContent(re.hdgui2DLua()) }),
             *Panel.values().map {
-                Pair("GUI2D/${re.getPanelImageName(it)}", { generatePanelImgContent(re, it) }) }.toTypedArray(),
+                Pair("GUI2D/${re.getPanelImageName(it)}", { generatePanelImgContent(re, it) })
+            }.toTypedArray(),
             *re.getPropertyImages().map {
-                Pair("GUI2D/${it}.png", {generateStaticImgContent(it)}) }.toTypedArray()
+                Pair("GUI2D/${it}.png", { generateStaticImgContent(it) })
+            }.toTypedArray()
         )
     }
 

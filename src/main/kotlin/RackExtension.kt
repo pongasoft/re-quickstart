@@ -9,8 +9,9 @@ import kotlin.js.Promise
  * Represents the rack extension */
 class RackExtension(val info: Info) {
 
-
     companion object {
+        /**
+         * Creates a rack extension from the values coming from the html form */
         fun fromForm(form: HTMLFormElement): RackExtension {
             val data = FormData(form)
             val params = data.keys().asSequence().associateBy({ it }, { e -> data.get(e).toString() })
@@ -30,8 +31,12 @@ class RackExtension(val info: Info) {
         }
     }
 
+    /**
+     * The type of the device (determines the default sockets created by quick start) */
     enum class Type { instrument, creative_fx, studio_fx, helper, note_player }
 
+    /**
+     * Encapsulates all the required info defining the rack extension */
     class Info(
         val longName: String,
         val mediumName: String,
@@ -44,6 +49,7 @@ class RackExtension(val info: Info) {
     )
 
     private val _gui2D: GUI2D = GUI2D(info)
+
     private val _reProperties: MutableCollection<IREProperty> = mutableListOf()
 
     fun getPanelImageName(panel: Panel) = _gui2D.getPanelImageName(panel)
@@ -75,7 +81,36 @@ class RackExtension(val info: Info) {
         return imgs.sorted()
     }
 
-    fun motherboard(): String {
+    fun infoLua(): String {
+        return """
+format_version = "1.0"
+
+-- Note that changing this file requires a Reason/Recon restart
+
+-- Max 40 chars
+long_name = "${info.longName}"
+
+-- Max 20 chars
+medium_name = "${info.mediumName}"
+
+-- Max 10 chars
+short_name = "${info.shortName}"
+
+product_id = "${info.productId}"
+manufacturer = "${info.manufacturer}"
+version_number = "${info.version}"
+device_type = "${info.type}"
+supports_patches = false
+accepts_notes = ${info.type == Type.instrument}
+auto_create_track = ${info.type == Type.instrument}
+auto_create_note_lane = ${info.type == Type.instrument}
+supports_performance_automation = false
+device_height_ru = ${info.sizeInU}
+automation_highlight_color = {r = 60, g = 255, b = 2}
+"""
+    }
+
+    fun motherboardLua(): String {
         return """
 format_version = "1.0"
             
@@ -86,7 +121,7 @@ ${_reProperties.map { it.motherboard() }.filter { it != "" }.joinToString(separa
 """
     }
 
-    fun device2D(): String {
+    fun device2DLua(): String {
         val content = Panel.values().map { panel ->
             """
 --------------------------------------------------------------------------
@@ -106,7 +141,7 @@ format_version = "2.0"
 $content"""
     }
 
-    fun hdgui2D(): String {
+    fun hdgui2DLua(): String {
         val content = Panel.values().map { panel ->
             """
 --------------------------------------------------------------------------

@@ -269,14 +269,17 @@ fun init() {
                 document.getElementById("re-preview")?.replaceWith(preview)
             }
 
+            // render the front panel
             renderPreview(re, Panel.front)
 
+            // add links to render all panels
             Panel.values().forEach { panel ->
                 (document.getElementById("re-preview-$panel") as? HTMLAnchorElement)?.addEventListener("click", {
                     renderPreview(re, panel)
                 })
             }
 
+            // add links to preview all files included with the RE
             document.getElementById("re-files-preview-links")?.replaceWith(
                 document.create.div {
                     id = "re-files-preview-links"
@@ -284,6 +287,7 @@ fun init() {
                         reMgr.generateFileTree(re).forEach { (path, contentGenerator) ->
                             li {
                                 a {
+                                    id = "preview-action-${path}"
                                     onClickFunction = {
                                         val content = contentGenerator()
                                         content.id = "re-files-preview-content"
@@ -296,6 +300,10 @@ fun init() {
                     }
                 }
             )
+
+            // preview info
+            (document.getElementById("preview-action-info.lua") as? HTMLAnchorElement)?.click()
+
         }
 
 //
