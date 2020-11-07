@@ -28,10 +28,13 @@ kotlin {
     }
 }
 
-// Creates the zip file loaded at runtime
-tasks.create<Zip>("zip") {
+// Creates the zip file loaded at runtime (ideally it would be generated in the build dir, but I have no clue
+// how to add it to the browserDevelopmentRun input files) so for now it is being generated in the source tree
+val zipTask = tasks.create<Zip>("zip") {
     from("src/plugin/resources")
     include("**/*")
     archiveFileName.set("plugin.zip")
     destinationDirectory.set(File("src/main/resources"))
 }
+
+tasks.findByName("processResources")?.dependsOn(zipTask)

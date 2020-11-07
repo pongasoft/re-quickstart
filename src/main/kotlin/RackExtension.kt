@@ -56,6 +56,8 @@ class RackExtension(val info: Info) {
 
     fun getPanelImageName(panel: Panel) = _gui2D.getPanelImageName(panel)
 
+    fun getPanelImageKey(panel: Panel) = _gui2D.getPanelImageKey(panel)
+
     fun generatePanel(panel: Panel) = _gui2D.generatePanelElement(panel)
 
     fun generateFullPanel(panel: Panel, imageProvider: ImageProvider): HTMLCanvasElement {
@@ -266,6 +268,11 @@ $content
         val setToken = { key: String, value: String ->
           newTokens.getOrPut(key, {value})
         }
+
+        setToken("cmake_project_name", info.productId.split(".").lastOrNull()?: "Blank")
+
+        val imageKeys = Panel.values().map { getPanelImageKey(it) } + getPropertyImages()
+        setToken("re_sources_2d", imageKeys.joinToString(separator = "\n") { "    \"\${RE_2D_SRC_DIR}/${it}.png\"" })
 
         val t = newTokens.mapKeys { (k,_) -> "[-$k-]" }
 

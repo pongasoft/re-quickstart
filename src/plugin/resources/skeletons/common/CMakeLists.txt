@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Setting up project (note that the version is defined in lua.info)
-project(BlankPlugin LANGUAGES CXX)
+project([-cmake_project_name-] LANGUAGES CXX)
 
 # Using C++17
 set(CMAKE_CXX_STANDARD 17)
@@ -55,16 +55,7 @@ set(re_sources_2d
     ${RE_2D_SRC_DIR}/hdgui_2D.lua
 
     # Images for the device
-    ${RE_2D_SRC_DIR}/Panel_Back.png
-    ${RE_2D_SRC_DIR}/Panel_Folded_Back.png
-    ${RE_2D_SRC_DIR}/Panel_Folded_Front.png
-    ${RE_2D_SRC_DIR}/Panel_Front.png
-
-    # Images from RE2D Stocks Graphics 1.1
-    ${RE_2D_SRC_DIR}/Placeholder.png
-    ${RE_2D_SRC_DIR}/Cable_Attachment_Audio_01_1frames.png
-    ${RE_2D_SRC_DIR}/Tape_Horizontal_1frames.png
-
+[-re_sources_2d-]
     )
 
 # Adding the RE plugin

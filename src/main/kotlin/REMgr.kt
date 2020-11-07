@@ -179,7 +179,7 @@ class REMgr(private val storage: Storage) {
                 Pair("GUI2D/${re.getPanelImageName(it)}", { generatePanelImgContent(re, it) })
             }.toTypedArray(),
             *re.getPropertyImages().map {
-                Pair("GUI2D/${it}.png", { generateStaticImgContent(it) })
+                Pair("GUI2D/${it}.png", { generateStaticImgContent("images/BuiltIn/${it}.png") })
             }.toTypedArray(),
             *resources.toTypedArray()
         )

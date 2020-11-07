@@ -29,7 +29,9 @@ class GUI2D(
         Panel.folded_front, Panel.folded_back -> hiResFoldedHeight
     }
 
-    fun getPanelImageName(panel: Panel) = "Panel_$panel.png"
+    fun getPanelImageName(panel: Panel) = "${getPanelImageKey(panel)}.png"
+
+    fun getPanelImageKey(panel: Panel) = "Panel_$panel"
 
     fun generatePanelElement(panel: Panel) =
         with(document.createElement("canvas")) {
