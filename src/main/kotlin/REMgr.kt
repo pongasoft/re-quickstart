@@ -33,14 +33,14 @@ class REMgr(private val storage: Storage) {
                             AudioSocketType.input,
                             centerX - margin - audioSocket.image.width,
                             centerY - margin - audioSocket.image.height,
-                            audioSocket.name
+                            audioSocket.key
                         ),
                         right = AudioSocket(
                             "MainInRight",
                             AudioSocketType.input,
                             centerX + margin,
                             centerY - margin - audioSocket.image.height,
-                            audioSocket.name
+                            audioSocket.key
                         )
                     )
                 )
@@ -53,14 +53,14 @@ class REMgr(private val storage: Storage) {
                             AudioSocketType.output,
                             centerX - margin - audioSocket.image.width,
                             centerY + margin,
-                            audioSocket.name
+                            audioSocket.key
                         ),
                         right = AudioSocket(
                             "MainOutRight",
                             AudioSocketType.output,
                             centerX + margin,
                             centerY + margin,
-                            audioSocket.name
+                            audioSocket.key
                         )
                     )
                 )
@@ -75,14 +75,14 @@ class REMgr(private val storage: Storage) {
                             AudioSocketType.output,
                             centerX - margin - audioSocket.image.width,
                             centerY + margin - audioSocket.image.height / 2,
-                            audioSocket.name
+                            audioSocket.key
                         ),
                         right = AudioSocket(
                             "MainOutRight",
                             AudioSocketType.output,
                             centerX + margin,
                             centerY + margin - audioSocket.image.height / 2,
-                            audioSocket.name
+                            audioSocket.key
                         )
                     )
                 )
@@ -103,7 +103,7 @@ class REMgr(private val storage: Storage) {
         val img = storage.getTapeHorizontalImageResource()
         Panel.values().forEach { panel ->
             val (x, y) = re.getTopLeft(panel)
-            prop.addWidget(panel, REPropertyWidget.Type.device_name, img.name, x + margin, y + margin)
+            prop.addWidget(panel, REPropertyWidget.Type.device_name, img.key, x + margin, y + margin)
         }
         re.addREProperty(prop)
     }
@@ -116,7 +116,7 @@ class REMgr(private val storage: Storage) {
             "Placeholder",
             re.getWidth() - img.image.width,
             re.getHeight(Panel.back) - img.image.height,
-            img.name
+            img.key
         )
         re.addREProperty(prop)
     }
@@ -131,6 +131,11 @@ class REMgr(private val storage: Storage) {
     }
 
     private fun generateTextContent(content: String) = document.create.pre { +content }
+
+    private fun generateResourceContent(re: RackExtension, resource: StorageResource) = when (resource) {
+        is FileResource -> document.create.pre { +re.processContent(resource.content) }
+        else -> document.create.pre { +"not implemented yet" }
+    }
 
     private fun generateStaticImgContent(name: String): HTMLElement {
         val img = storage.findImageResource(name)?.image
@@ -153,6 +158,16 @@ class REMgr(private val storage: Storage) {
     }
 
     fun generateFileTree(re: RackExtension): Map<String, () -> HTMLElement> {
+
+        // we use common files and type specific files (not used at the moment)
+        val resources = storage.resources
+            .filter { it is FileResource &&
+                    !it.path.endsWith("/") &&
+                    (it.path.startsWith("skeletons/common/") || it.path.startsWith("skeleton/${re.info.type}/")) }
+            .map { resource ->
+                Pair(resource.path.removePrefix("skeletons/common/"), { generateResourceContent(re, resource) })
+            }
+
         return mapOf(
             Pair("info.lua", { generateTextContent(re.infoLua()) }),
             Pair("motherboard_def.lua", { generateTextContent(re.motherboardLua()) }),
@@ -165,7 +180,8 @@ class REMgr(private val storage: Storage) {
             }.toTypedArray(),
             *re.getPropertyImages().map {
                 Pair("GUI2D/${it}.png", { generateStaticImgContent(it) })
-            }.toTypedArray()
+            }.toTypedArray(),
+            *resources.toTypedArray()
         )
     }
 

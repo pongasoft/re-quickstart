@@ -284,18 +284,20 @@ fun init() {
                 document.create.div {
                     id = "re-files-preview-links"
                     ul {
-                        reMgr.generateFileTree(re).forEach { (path, contentGenerator) ->
+                        val tree = reMgr.generateFileTree(re) // .toSortedMap() does not work...
+                        tree.keys.sortedBy { it.toLowerCase() }.forEach { path ->
                             li {
                                 a {
                                     id = "preview-action-${path}"
                                     onClickFunction = {
-                                        val content = contentGenerator()
+                                        val content = tree[path]?.invoke()!! // keys are from the map
                                         content.id = "re-files-preview-content"
                                         document.getElementById("re-files-preview-content")?.replaceWith(content)
                                     }
                                     +path
                                 }
                             }
+
                         }
                     }
                 }

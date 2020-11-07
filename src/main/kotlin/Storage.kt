@@ -1,45 +1,84 @@
 import org.w3c.dom.Image
 import org.w3c.files.Blob
+import org.w3c.files.File
+import kotlin.js.Date
 import kotlin.js.Promise
 
-class ImageResource(val name: String, val blob: Blob, val image: Image) {
-    companion object {
-        fun asyncFetch(name: String, url: String): Promise<ImageResource> {
-            return fetchBlob(url).then { blob ->
-                Image.asyncLoad(org.w3c.dom.url.URL.Companion.createObjectURL(blob)).then { image ->
-                    ImageResource(name, blob, image)
-                }
-            }.flatten()
-        }
-    }
+/**
+ * Maintains the information for each file in the zip archive. Will use permission and date to generate the
+ * outcome archive. */
+open class StorageResource(val path: String, val date: Date?, val unixPermissions: Int?)
+
+/**
+ * A file resource (text file) */
+class FileResource(path: String, date: Date?, unixPermissions: Int?, val content: String) :
+    StorageResource(path, date, unixPermissions)
+
+/**
+ * An image resource (both blob and image) */
+class ImageResource(path: String, date: Date?, unixPermissions: Int?, val blob: Blob, val image: Image) :
+    StorageResource(path, date, unixPermissions) {
+
+    val key : String  get() = path.split("/").last().removeSuffix(".png")
 }
 
 interface ImageProvider {
 
     companion object {
-        protected val AUDIO_SOCKET_IMAGE = "Cable_Attachment_Audio_01_1frames"
-        protected val PLACEHOLDER_IMAGE = "Placeholder"
-        protected val TAPE_HORIZONTAL_IMAGE = "Tape_Horizontal_1frames"
+        protected const val AUDIO_SOCKET_IMAGE = "images/BuiltIn/Cable_Attachment_Audio_01_1frames.png"
+        protected const val PLACEHOLDER_IMAGE = "images/BuiltIn/Placeholder.png"
+        protected const val TAPE_HORIZONTAL_IMAGE = "images/BuiltIn/Tape_Horizontal_1frames.png"
     }
 
-    fun findImageResource(name: String): ImageResource?
+    fun findImageResource(path: String): ImageResource?
 
-    fun getAudioSocketImageResource() = findImageResource(AUDIO_SOCKET_IMAGE)!! // return N/A image if not found instead
-    fun getPlaceholderImageResource() = findImageResource(PLACEHOLDER_IMAGE)!! // return N/A image if not found instead
-    fun getTapeHorizontalImageResource() = findImageResource(TAPE_HORIZONTAL_IMAGE)!! // return N/A image if not found instead
+    fun getAudioSocketImageResource() = findImageResource(AUDIO_SOCKET_IMAGE)!!
+    fun getPlaceholderImageResource() = findImageResource(PLACEHOLDER_IMAGE)!!
+    fun getTapeHorizontalImageResource() = findImageResource(TAPE_HORIZONTAL_IMAGE)!!
 }
 
-class Storage(val images: Map<String, ImageResource>) : ImageProvider {
+class Storage(val resources: Array<out StorageResource>) : ImageProvider {
 
-    override fun findImageResource(name: String): ImageResource? = images[name]
+    override fun findImageResource(path: String): ImageResource? =
+        resources.find { it.path == path } as? ImageResource
+
+//    fun listAvailabeResources() = resources.map { it.path }
 
     companion object {
-        fun load(): Promise<Storage> {
-            return Promise.all(arrayOf(ImageProvider.AUDIO_SOCKET_IMAGE, ImageProvider.PLACEHOLDER_IMAGE, ImageProvider.TAPE_HORIZONTAL_IMAGE).map { name ->
-                ImageResource.asyncFetch(name, "images/BuiltIn/$name.png").then { ir -> Pair(name, ir) }
-            }.toTypedArray()).then {
-                Storage(mapOf(*it))
+        fun load(): Promise<Storage> =
+            fetchBlob("plugin.zip").then { zipBlob ->
+                val zip = JSZip()
+                zip.loadAsync(zipBlob).then {
+                    val promises = mutableListOf<Promise<StorageResource>>()
+                    zip.forEach { path, file ->
+                        // handle images
+                        if (path.endsWith(".png")) {
+                            promises.add(
+                                file.async("blob").then { blob ->
+                                    blob as Blob
+                                    Image.asyncLoad(org.w3c.dom.url.URL.Companion.createObjectURL(blob)).then { image ->
+                                        ImageResource(path, file.date, file.unixPermissions, blob, image)
+                                    }
+                                }.flatten()
+                            )
+                        } else {
+                            if (!(path.startsWith("__MACOSX") ||
+                                        path.startsWith(".idea") ||
+                                        path.endsWith(".DS_Store"))
+                            ) {
+                                promises.add(
+                                    file.async("string").then { content ->
+                                        FileResource(path, file.date, file.unixPermissions, content.toString())
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Promise.all(promises.toTypedArray())
+                }.flatten()
+            }.flatten().then {
+                Storage(it)
             }
-        }
     }
 }

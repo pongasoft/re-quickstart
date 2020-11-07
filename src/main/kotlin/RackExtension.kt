@@ -9,6 +9,23 @@ import kotlin.js.Promise
  * Represents the rack extension */
 class RackExtension(val info: Info) {
 
+    /**
+     * The type of the device (determines the default sockets created by quick start) */
+    enum class Type { instrument, creative_fx, studio_fx, helper, note_player }
+
+    /**
+     * Encapsulates all the required info defining the rack extension */
+    class Info(
+        val longName: String,
+        val mediumName: String,
+        val shortName: String,
+        val manufacturer: String,
+        val productId: String,
+        val version: String,
+        val type: Type,
+        val sizeInU: Int = 1
+    )
+
     companion object {
         /**
          * Creates a rack extension from the values coming from the html form */
@@ -31,22 +48,7 @@ class RackExtension(val info: Info) {
         }
     }
 
-    /**
-     * The type of the device (determines the default sockets created by quick start) */
-    enum class Type { instrument, creative_fx, studio_fx, helper, note_player }
-
-    /**
-     * Encapsulates all the required info defining the rack extension */
-    class Info(
-        val longName: String,
-        val mediumName: String,
-        val shortName: String,
-        val manufacturer: String,
-        val productId: String,
-        val version: String,
-        val type: Type,
-        val sizeInU: Int = 1
-    )
+    private val _tokens : Map<String, String> by lazy { generateTokens() }
 
     private val _gui2D: GUI2D = GUI2D(info)
 
@@ -248,6 +250,26 @@ format_version = "2.0"
             
 $content
 """
+    }
+
+    fun processContent(content: String) : String {
+        var processedContent = content
+        for((tokenName, tokenValue) in _tokens) {
+          processedContent = processedContent.replace(tokenName, tokenValue)
+        }
+        return processedContent
+    }
+
+    private fun generateTokens() : Map<String, String> {
+        val newTokens = mutableMapOf<String, String>()
+
+        val setToken = { key: String, value: String ->
+          newTokens.getOrPut(key, {value})
+        }
+
+        val t = newTokens.mapKeys { (k,_) -> "[-$k-]" }
+
+        return t
     }
 
     /**

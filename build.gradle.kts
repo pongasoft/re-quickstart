@@ -27,3 +27,11 @@ kotlin {
         }
     }
 }
+
+// Creates the zip file loaded at runtime
+tasks.create<Zip>("zip") {
+    from("src/plugin/resources")
+    include("**/*")
+    archiveFileName.set("plugin.zip")
+    destinationDirectory.set(File("src/main/resources"))
+}
