@@ -1,6 +1,5 @@
 import org.w3c.dom.Image
 import org.w3c.files.Blob
-import org.w3c.files.File
 import kotlin.js.Date
 import kotlin.js.Promise
 
@@ -30,19 +29,17 @@ interface ImageProvider {
         protected const val TAPE_HORIZONTAL_IMAGE = "images/BuiltIn/Tape_Horizontal_1frames.png"
     }
 
-    fun findImageResource(path: String): ImageResource?
+    fun findImageResourceByPath(path: String): ImageResource?
 
-    fun getAudioSocketImageResource() = findImageResource(AUDIO_SOCKET_IMAGE)!!
-    fun getPlaceholderImageResource() = findImageResource(PLACEHOLDER_IMAGE)!!
-    fun getTapeHorizontalImageResource() = findImageResource(TAPE_HORIZONTAL_IMAGE)!!
+    fun getAudioSocketImageResource() = findImageResourceByPath(AUDIO_SOCKET_IMAGE)!!
+    fun getPlaceholderImageResource() = findImageResourceByPath(PLACEHOLDER_IMAGE)!!
+    fun getTapeHorizontalImageResource() = findImageResourceByPath(TAPE_HORIZONTAL_IMAGE)!!
 }
 
 class Storage(val resources: Array<out StorageResource>) : ImageProvider {
 
-    override fun findImageResource(path: String): ImageResource? =
+    override fun findImageResourceByPath(path: String): ImageResource? =
         resources.find { it.path == path } as? ImageResource
-
-//    fun listAvailabeResources() = resources.map { it.path }
 
     companion object {
         fun load(): Promise<Storage> =

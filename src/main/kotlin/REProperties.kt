@@ -46,9 +46,9 @@ interface IREProperty {
      *         Returns empty string if there is no widget for the given panel */
     fun hdgui2D(panel: Panel): String
 
-    fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider)
+    fun render(panel: Panel, ctx: CanvasRenderingContext2D)
 
-    fun getImages() : List<String>
+    fun getImageResources() : List<ImageResource>
 
     fun rtInputSetup(): List<String>
 
@@ -74,17 +74,17 @@ abstract class REProperty(val name: String) : IREProperty {
     fun addWidget(
         panel: Panel,
         type: REPropertyWidget.Type,
-        image: String,
+        imageResource: ImageResource,
         offsetX: Int = 0,
         offsetY: Int = 0,
         frames: Int = 1
     ) = addWidget(
         when (type) {
-            REPropertyWidget.Type.device_name -> REDeviceNameWidget(panel, this, offsetX, offsetY, image)
+            REPropertyWidget.Type.device_name -> REDeviceNameWidget(panel, this, offsetX, offsetY, imageResource)
         }
     )
 
-    override fun getImages() = _widgets.map { it.image }
+    override fun getImageResources() = _widgets.map { it.imageResource }
 
     fun widgetCount(panel: Panel) = _widgets.count { it.panel == panel }
 
@@ -103,8 +103,8 @@ abstract class REProperty(val name: String) : IREProperty {
     override fun textResources(): Map<String, String> = mapOf(Pair("$name ui_name", "TBD [$name ui_name]"))
 
     // render
-    override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
-        _widgets.filter { it.panel == panel }.forEach { it.render(ctx, imageProvider) }
+    override fun render(panel: Panel, ctx: CanvasRenderingContext2D) {
+        _widgets.filter { it.panel == panel }.forEach { it.render(ctx) }
     }
 }
 
@@ -115,7 +115,7 @@ abstract class REPropertyWidget(
     val prop: REProperty,
     val offsetX: Int,
     val offsetY: Int,
-    val image: String,
+    val imageResource: ImageResource,
     val frames: Int = 1
 ) {
     enum class Type {
@@ -129,26 +129,24 @@ abstract class REPropertyWidget(
     fun device2D(): String {
         val f = if (frames > 1) ", frames=$frames " else ""
         val offset = if (offsetX != 0 || offsetY != 0) "offset = { $offsetX, $offsetY }, " else ""
-        return """$panel["$nodeName"] = { $offset{ path = "$image" $f} }"""
+        return """$panel["$nodeName"] = { $offset{ path = "${imageResource.key}" $f} }"""
     }
 
-    fun render(ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
-        imageProvider.findImageResource(image)?.image?.let {
-            val src = it
-            val w = src.width.toDouble()
-            val h = src.height / frames.toDouble() // height (first frame)
-            ctx.drawImage(
-                src,
-                0.toDouble(), // src x
-                0.toDouble(), // src y
-                w, // src width
-                h, // src height (first frame)
-                offsetX.toDouble(),
-                offsetY.toDouble(),
-                w,
-                h
-            )
-        }
+    fun render(ctx: CanvasRenderingContext2D) {
+        val src = imageResource.image
+        val w = src.width.toDouble()
+        val h = src.height / frames.toDouble() // height (first frame)
+        ctx.drawImage(
+            src,
+            0.toDouble(), // src x
+            0.toDouble(), // src y
+            w, // src width
+            h, // src height (first frame)
+            offsetX.toDouble(),
+            offsetY.toDouble(),
+            w,
+            h
+        )
     }
 
     /**

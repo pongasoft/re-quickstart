@@ -15,8 +15,8 @@ class REDeviceNameWidget(
     prop: REProperty,
     offsetX: Int,
     offsetY: Int,
-    image: String
-) : REPropertyWidget(panel, prop, offsetX, offsetY, image) {
+    imageResource: ImageResource
+) : REPropertyWidget(panel, prop, offsetX, offsetY, imageResource) {
     override fun hdgui2D(): String {
         return """-- device name / tape
 ${panel}_widgets[#${panel}_widgets + 1] = jbox.device_name {
@@ -33,10 +33,10 @@ class REPlaceholderProperty(
     name: String,
     offsetX: Int,
     offsetY: Int,
-    image: String
+    imageResource: ImageResource
 ) : REBuiltInProperty(name) {
     init {
-        addWidget(REPlaceholderWidget(this, offsetX, offsetY, image))
+        addWidget(REPlaceholderWidget(this, offsetX, offsetY, imageResource))
     }
 }
 
@@ -46,8 +46,8 @@ class REPlaceholderWidget(
     prop: REPlaceholderProperty,
     offsetX: Int,
     offsetY: Int,
-    image: String
-) : REPropertyWidget(Panel.back, prop, offsetX, offsetY, image) {
+    imageResource: ImageResource
+) : REPropertyWidget(Panel.back, prop, offsetX, offsetY, imageResource) {
     override fun hdgui2D(): String {
         return """-- placeholder
 ${panel}_widgets[#${panel}_widgets + 1] = jbox.placeholder {

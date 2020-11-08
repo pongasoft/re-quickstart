@@ -33,14 +33,14 @@ class REMgr(private val storage: Storage) {
                             AudioSocketType.input,
                             centerX - margin - audioSocket.image.width,
                             centerY - margin - audioSocket.image.height,
-                            audioSocket.key
+                            audioSocket
                         ),
                         right = AudioSocket(
                             "MainInRight",
                             AudioSocketType.input,
                             centerX + margin,
                             centerY - margin - audioSocket.image.height,
-                            audioSocket.key
+                            audioSocket
                         )
                     )
                 )
@@ -53,14 +53,14 @@ class REMgr(private val storage: Storage) {
                             AudioSocketType.output,
                             centerX - margin - audioSocket.image.width,
                             centerY + margin,
-                            audioSocket.key
+                            audioSocket
                         ),
                         right = AudioSocket(
                             "MainOutRight",
                             AudioSocketType.output,
                             centerX + margin,
                             centerY + margin,
-                            audioSocket.key
+                            audioSocket
                         )
                     )
                 )
@@ -75,14 +75,14 @@ class REMgr(private val storage: Storage) {
                             AudioSocketType.output,
                             centerX - margin - audioSocket.image.width,
                             centerY + margin - audioSocket.image.height / 2,
-                            audioSocket.key
+                            audioSocket
                         ),
                         right = AudioSocket(
                             "MainOutRight",
                             AudioSocketType.output,
                             centerX + margin,
                             centerY + margin - audioSocket.image.height / 2,
-                            audioSocket.key
+                            audioSocket
                         )
                     )
                 )
@@ -103,7 +103,7 @@ class REMgr(private val storage: Storage) {
         val img = storage.getTapeHorizontalImageResource()
         Panel.values().forEach { panel ->
             val (x, y) = re.getTopLeft(panel)
-            prop.addWidget(panel, REPropertyWidget.Type.device_name, img.key, x + margin, y + margin)
+            prop.addWidget(panel, REPropertyWidget.Type.device_name, img, x + margin, y + margin)
         }
         re.addREProperty(prop)
     }
@@ -116,7 +116,7 @@ class REMgr(private val storage: Storage) {
             "Placeholder",
             re.getWidth() - img.image.width,
             re.getHeight(Panel.back) - img.image.height,
-            img.key
+            img
         )
         re.addREProperty(prop)
     }
@@ -125,7 +125,7 @@ class REMgr(private val storage: Storage) {
      * Generates the preview */
     fun generatePreview(re: RackExtension, panel: Panel) = with(document.createElement("img")) {
         this as HTMLImageElement
-        src = re.generateFullPanel(panel, storage).toDataURL(type = "image/png")
+        src = re.generateFullPanel(panel).toDataURL(type = "image/png")
         width = re.getWidth() / GUI2D.lowResScalingFactor
         this
     }
@@ -137,17 +137,11 @@ class REMgr(private val storage: Storage) {
         else -> document.create.pre { +"not implemented yet" }
     }
 
-    private fun generateStaticImgContent(name: String): HTMLElement {
-        val img = storage.findImageResource(name)?.image
-        if (img != null)
-            return with(document.createElement("img")) {
-                this as HTMLImageElement
-                src = img.src
-                width = img.width / GUI2D.lowResScalingFactor
-                this
-            }
-        else
-            return generateTextContent("N/A")
+    private fun generateStaticImgContent(imageResource: ImageResource) = with(document.createElement("img")) {
+        this as HTMLImageElement
+        src = imageResource.image.src
+        width = imageResource.image.width / GUI2D.lowResScalingFactor
+        this
     }
 
     private fun generatePanelImgContent(re: RackExtension, panel: Panel) = with(document.createElement("img")) {
@@ -179,7 +173,7 @@ class REMgr(private val storage: Storage) {
                 Pair("GUI2D/${re.getPanelImageName(it)}", { generatePanelImgContent(re, it) })
             }.toTypedArray(),
             *re.getPropertyImages().map {
-                Pair("GUI2D/${it}.png", { generateStaticImgContent("images/BuiltIn/${it}.png") })
+                Pair("GUI2D/${it.key}.png", { generateStaticImgContent(it) })
             }.toTypedArray(),
             *resources.toTypedArray()
         )

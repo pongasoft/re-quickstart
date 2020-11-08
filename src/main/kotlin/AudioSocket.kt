@@ -12,11 +12,11 @@ class AudioSocket(
     val type: AudioSocketType,
     offsetX: Int,
     offsetY: Int,
-    image: String
+    imageResource: ImageResource
 ) : REProperty(name) {
 
     init {
-        addWidget(AudioSocketWidget(type, this, offsetX, offsetY, image))
+        addWidget(AudioSocketWidget(type, this, offsetX, offsetY, imageResource))
     }
 
     override val path: String
@@ -37,7 +37,7 @@ class AudioSocketWidget(val type: AudioSocketType,
                         prop: REProperty,
                         offsetX: Int,
                         offsetY: Int,
-                        image: String) : REPropertyWidget(Panel.back, prop, offsetX, offsetY, image) {
+                        imageResource: ImageResource) : REPropertyWidget(Panel.back, prop, offsetX, offsetY, imageResource) {
     override fun hdgui2D(): String {
         return """--- ${prop.name} | audio $type socket
 ${panel}_widgets[#${panel}_widgets + 1] = jbox.audio_${type}_socket {
@@ -85,10 +85,10 @@ ${right.hdgui2D(panel)}""" else ""
 
     override fun textResources() = left.textResources() + right.textResources()
 
-    override fun render(panel: Panel, ctx: CanvasRenderingContext2D, imageProvider: ImageProvider) {
-        left.render(panel, ctx, imageProvider)
-        right.render(panel, ctx, imageProvider)
+    override fun render(panel: Panel, ctx: CanvasRenderingContext2D) {
+        left.render(panel, ctx)
+        right.render(panel, ctx)
     }
 
-    override fun getImages(): List<String> = left.getImages() + right.getImages()
+    override fun getImageResources(): List<ImageResource> = left.getImageResources() + right.getImageResources()
 }

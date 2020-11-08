@@ -60,11 +60,11 @@ class RackExtension(val info: Info) {
 
     fun generatePanel(panel: Panel) = _gui2D.generatePanelElement(panel)
 
-    fun generateFullPanel(panel: Panel, imageProvider: ImageProvider): HTMLCanvasElement {
+    fun generateFullPanel(panel: Panel): HTMLCanvasElement {
         val canvas = _gui2D.generatePanelElement(panel)
         with(canvas.getContext("2d")) {
             this as CanvasRenderingContext2D
-            _reProperties.forEach { prop -> prop.render(panel, this, imageProvider) }
+            _reProperties.forEach { prop -> prop.render(panel, this) }
         }
         return canvas
     }
@@ -79,10 +79,10 @@ class RackExtension(val info: Info) {
 
     fun addREProperty(prop: IREProperty) = _reProperties.add(prop)
 
-    fun getPropertyImages(): List<String> {
-        val imgs = mutableSetOf<String>()
-        _reProperties.forEach { imgs.addAll(it.getImages()) }
-        return imgs.sorted()
+    fun getPropertyImages(): List<ImageResource> {
+        val images = mutableSetOf<ImageResource>()
+        _reProperties.forEach { images.addAll(it.getImageResources()) }
+        return images.toList()
     }
 
     fun infoLua(): String {
