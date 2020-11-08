@@ -282,17 +282,24 @@ $content
     /**
      * Generates the (promise) of the zip file
      * @return a (promise of a) pair where the first element is the name of the zip file and the second is the content */
-    fun generateZip(): Promise<Pair<String, Blob>> {
+    fun generateZip(tree: FileTree): Promise<Pair<String, Blob>> {
 
-        val root = "plugin"
+        val root = "${info.productId}-plugin"
 
         val zip = JSZip()
         val rootDir = zip.folder(root)
 
-        return Promise.all(_gui2D.generateBackgroundBlobs()).then { array ->
-            // add the background images (async generation)
-            array.forEach { (name, blob) ->
-                rootDir.file("GUI2D/$name", blob)
+        class ZipEntry(val name: String, val resource: StorageResource?, val content: Any)
+
+        return Promise.all(tree.map { (name, entry) ->
+            entry.zip.then { ZipEntry(name, entry.resource, it) }
+        }.toTypedArray()).then { array ->
+            array.forEach { entry ->
+                val fileOptions = object : JSZipFileOptions {}.apply {
+                  date = entry.resource?.date
+                  unixPermissions = entry.resource?.unixPermissions
+                }
+                rootDir.file(entry.name, entry.content, fileOptions)
             }
         }.then {
             // generate the zip

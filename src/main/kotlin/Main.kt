@@ -279,18 +279,19 @@ fun init() {
                 })
             }
 
+            val tree = reMgr.generateFileTree(re)
+
             // add links to preview all files included with the RE
             document.getElementById("re-files-preview-links")?.replaceWith(
                 document.create.div {
                     id = "re-files-preview-links"
                     ul {
-                        val tree = reMgr.generateFileTree(re) // .toSortedMap() does not work...
                         tree.keys.sortedBy { it.toLowerCase() }.forEach { path ->
                             li {
                                 a {
                                     id = "preview-action-${path}"
                                     onClickFunction = {
-                                        val content = tree[path]?.invoke()!! // keys are from the map
+                                        val content = tree[path]?.html?.invoke()!! // keys are from the map
                                         content.id = "re-files-preview-content"
                                         document.getElementById("re-files-preview-content")?.replaceWith(content)
                                     }
@@ -306,18 +307,17 @@ fun init() {
             // preview info
             (document.getElementById("preview-action-info.lua") as? HTMLAnchorElement)?.click()
 
+            // generate zip file
+            re.generateZip(tree).then { (name, blob) ->
+                notification.info("generated $name")
+                val downloadAnchor = generateDownloadAnchor(name, blob)
+                document.findMetaContent("X-re-quickstart-download-link")?.let {
+                    downloadAnchor.text = it
+                    notification.info(downloadAnchor)
+                }
+//            downloadAnchor.click()
+            }
         }
-
-//
-//        re.generateZip().then { (name, blob) ->
-//            notification.info("generated $name")
-//            val downloadAnchor = generateDownloadAnchor(name, blob)
-//            document.findMetaContent("X-re-quickstart-download-link")?.let {
-//                downloadAnchor.text = it
-//                notification.info(downloadAnchor)
-//            }
-////            downloadAnchor.click()
-//        }
     }
 
     elements["long_name"]?.onChange {

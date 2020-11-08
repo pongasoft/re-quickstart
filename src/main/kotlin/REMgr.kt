@@ -6,6 +6,9 @@ import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLImageElement
 import kotlin.js.Promise
 
+class FileTreeEntry(val html: () -> HTMLElement, val zip: Promise<Any>, val resource: StorageResource? = null)
+typealias FileTree = Map<String, FileTreeEntry>
+
 class REMgr(private val storage: Storage) {
 
     fun createRE(form: HTMLFormElement): RackExtension {
@@ -151,7 +154,7 @@ class REMgr(private val storage: Storage) {
         this
     }
 
-    fun generateFileTree(re: RackExtension): Map<String, () -> HTMLElement> {
+    fun generateFileTree(re: RackExtension): FileTree {
 
         // we use common files and type specific files (not used at the moment)
         val resources = storage.resources
@@ -159,22 +162,54 @@ class REMgr(private val storage: Storage) {
                     !it.path.endsWith("/") &&
                     (it.path.startsWith("skeletons/common/") || it.path.startsWith("skeleton/${re.info.type}/")) }
             .map { resource ->
-                Pair(resource.path.removePrefix("skeletons/common/"), { generateResourceContent(re, resource) })
+                resource as FileResource
+                Pair(resource.path.removePrefix("skeletons/common/"),
+                    FileTreeEntry(
+                        resource = resource,
+                        html = { generateResourceContent(re, resource) },
+                        zip = Promise.resolve(re.processContent(resource.content))
+                    )
+                )
             }
 
+        fun genTextPair(name: String, content: String) =
+            Pair(name,
+                FileTreeEntry(
+                    html = { generateTextContent(content) },
+                    zip = Promise.resolve(content)
+                )
+            )
+
+        fun genDynamicImagePair(panel: Panel): Pair<String, FileTreeEntry> {
+            val name = "GUI2D/${re.getPanelImageName(panel)}"
+            return Pair(name,
+                FileTreeEntry(
+                    html = { generatePanelImgContent(re, panel) },
+                    zip = re.generatePanel(panel).toNamedBlob(name).then { it.second }
+                )
+            )
+        }
+
+        fun genStaticImagePair(imageResource: ImageResource): Pair<String, FileTreeEntry> {
+            val name = "GUI2D/${imageResource.key}.png"
+            return Pair(name,
+                FileTreeEntry(
+                    resource = imageResource,
+                    html = { generateStaticImgContent(imageResource) },
+                    zip = Promise.resolve(imageResource.blob)
+                )
+            )
+        }
+
         return mapOf(
-            Pair("info.lua", { generateTextContent(re.infoLua()) }),
-            Pair("motherboard_def.lua", { generateTextContent(re.motherboardLua()) }),
-            Pair("realtime_controller.lua", { generateTextContent(re.realtimeControllerLua()) }),
-            Pair("Resources/English/texts.lua", { generateTextContent(re.textsLua()) }),
-            Pair("GUI2D/device_2d.lua", { generateTextContent(re.device2DLua()) }),
-            Pair("GUI2D/hdgui_2D.lua", { generateTextContent(re.hdgui2DLua()) }),
-            *Panel.values().map {
-                Pair("GUI2D/${re.getPanelImageName(it)}", { generatePanelImgContent(re, it) })
-            }.toTypedArray(),
-            *re.getPropertyImages().map {
-                Pair("GUI2D/${it.key}.png", { generateStaticImgContent(it) })
-            }.toTypedArray(),
+            genTextPair("info.lua", re.infoLua()),
+            genTextPair("motherboard_def.lua", re.motherboardLua()),
+            genTextPair("realtime_controller.lua", re.realtimeControllerLua()),
+            genTextPair("Resources/English/texts.lua", re.textsLua()),
+            genTextPair("GUI2D/device_2d.lua", re.device2DLua()),
+            genTextPair("GUI2D/hdgui_2D.lua", re.hdgui2DLua()),
+            *Panel.values().map { genDynamicImagePair(it) }.toTypedArray(),
+            *re.getPropertyImages().map { genStaticImagePair(it) }.toTypedArray(),
             *resources.toTypedArray()
         )
     }
