@@ -14,8 +14,8 @@ typealias FileTree = Map<String, FileTreeEntry>
 class REMgr(private val storage: Storage) {
 
     companion object {
-        fun load(): Promise<REMgr> {
-            return Storage.load().then { REMgr(it) }
+        fun load(version: String): Promise<REMgr> {
+            return Storage.load(version).then { REMgr(it) }
         }
     }
 

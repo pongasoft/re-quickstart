@@ -6,6 +6,7 @@ import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.*
 import org.w3c.dom.url.URL
+import org.w3c.dom.url.URLSearchParams
 import org.w3c.files.Blob
 
 /**
@@ -232,14 +233,15 @@ fun generateDownloadAnchor(filename: String, blob: Blob): HTMLAnchorElement {
 fun init() {
     val reQuickStartFormID = document.findMetaContent("X-re-quickstart-form-id") ?: "re-quickstart-form"
 
-    val reMgrPromise = REMgr.load()
+    val pluginVersion = document.findMetaContent("X-re-quickstart-plugin-version") ?: "1.0.0"
+    val reMgrPromise = REMgr.load(pluginVersion)
 
     document.getElementById(reQuickStartFormID)
         ?.replaceWith(
             createHTML(
                 entries.iterator(),
                 elementId = reQuickStartFormID,
-                classes = document.findMetaContent("X-jamba-form-class")
+                classes = document.findMetaContent("X-re-quickstart-form-class")
             )
         )
 
@@ -253,7 +255,11 @@ fun init() {
 
     val notification = Notification("notification")
 
-    notification.info("Welcome!")
+    notification.info("### Rack Extension Plugin Generator Output [v$pluginVersion] ###")
+
+    document.findMetaContent("X-re-quickstart-notification-welcome-message")?.let { message ->
+      message.split('|').forEach { notification.info(it) }
+    }
 
     elements["submit"]?.addListener("click") {
 

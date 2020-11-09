@@ -2,7 +2,7 @@ plugins {
     kotlin("js") version "1.4.10"
 }
 group = "org.pongasoft"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -28,14 +28,15 @@ kotlin {
     }
 }
 
-// Creates the zip file loaded at runtime (ends up in the build dir destinations folder)
+// Creates the zip file loaded at runtime (we store it under buildDir/assets)
 val zipTask = tasks.create<Zip>("zip") {
     from("src/plugin/resources")
     include("**/*")
-    archiveFileName.set("plugin.zip")
+    archiveFileName.set("plugin-${project.version}.zip")
+    destinationDirectory.set(File(buildDir, "assets"))
 }
 
-// Adds the destination folder so that the zip file can be loaded in dev mode */
+// Adds the assets folder to the list of sources so that the zip file can be loaded in dev mode
 kotlin.sourceSets.named("main") {
     resources.srcDir(zipTask.destinationDirectory)
 }

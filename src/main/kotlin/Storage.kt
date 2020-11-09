@@ -42,8 +42,8 @@ class Storage(val resources: Array<out StorageResource>) : ImageProvider {
         resources.find { it.path == path } as? ImageResource
 
     companion object {
-        fun load(): Promise<Storage> =
-            fetchBlob("plugin.zip").then { zipBlob ->
+        fun load(version: String): Promise<Storage> =
+            fetchBlob("plugin-$version.zip").then { zipBlob ->
                 val zip = JSZip()
                 zip.loadAsync(zipBlob).then {
                     val promises = mutableListOf<Promise<StorageResource>>()
