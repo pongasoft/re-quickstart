@@ -52,6 +52,8 @@ class RackExtension(val info: Info) {
 
     private val _reProperties: MutableCollection<IREProperty> = mutableListOf()
 
+    private val _reAutoRouting: MutableCollection<IREAutoRouting> = mutableListOf()
+
     fun getPanelImageKey(panel: Panel) = _gui2D.getPanelImageKey(panel)
 
     fun generatePanel(panel: Panel) = _gui2D.generatePanelElement(panel)
@@ -70,7 +72,15 @@ class RackExtension(val info: Info) {
 
     fun getTopLeft() = Pair(GUI2D.emptyMargin + GUI2D.hiResRailWidth, GUI2D.emptyMargin)
 
-    fun addREProperty(prop: IREProperty) = _reProperties.add(prop)
+    fun addREProperty(prop: IREProperty) {
+
+        _reProperties.add(prop)
+
+        if(prop is AudioStereoPair)
+            addREAutoRouting(StereoAudioRoutingPair(prop))
+    }
+
+    fun addREAutoRouting(routing: IREAutoRouting) = _reAutoRouting.add(routing)
 
     fun getPropertyImages(): List<ImageResource> {
         val images = mutableSetOf<ImageResource>()
@@ -115,6 +125,8 @@ class RackExtension(val info: Info) {
         // motherboard_def.lua
         setToken("motherboard_def-properties",
             _reProperties.map { it.motherboard() }.filter { it != "" }.joinToString(separator = "\n\n"))
+        setToken("motherboard_def-auto_routing",
+            _reAutoRouting.map { it.motherboard() }.filter { it != "" }.joinToString(separator = "\n\n"))
 
         // realtime_controller.lua
         setToken("realtime_controller-rt_input_setup",

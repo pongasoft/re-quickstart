@@ -43,3 +43,8 @@ custom_properties = jbox.property_set {
     properties = rtOwnerProperties
   }
 }
+
+--------------------------------------------------------------------------
+-- Routing
+--------------------------------------------------------------------------
+[-motherboard_def-auto_routing-]

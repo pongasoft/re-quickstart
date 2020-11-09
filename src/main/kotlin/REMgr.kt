@@ -37,7 +37,7 @@ class REMgr(private val storage: Storage) {
             // Effect: stereo in / stereo out
             RackExtension.Type.studio_fx, RackExtension.Type.creative_fx -> {
                 // Main in
-                re.addREProperty(
+                val mainInput =
                     AudioStereoPair(
                         left = AudioSocket(
                             "MainInLeft",
@@ -54,10 +54,9 @@ class REMgr(private val storage: Storage) {
                             audioSocket
                         )
                     )
-                )
 
                 // Main out
-                re.addREProperty(
+                val mainOutput =
                     AudioStereoPair(
                         left = AudioSocket(
                             "MainOutLeft",
@@ -74,29 +73,37 @@ class REMgr(private val storage: Storage) {
                             audioSocket
                         )
                     )
-                )
+
+                re.addREProperty(mainInput)
+                re.addREProperty(mainOutput)
+                re.addREAutoRouting(StereoEffectRoutingHint(mainInput, mainOutput))
+                re.addREAutoRouting(StereoAudioRoutingTarget(mainOutput))
+                re.addREAutoRouting(StereoAudioRoutingTarget(mainInput))
+                re.addREAutoRouting(EffectAutoBypassRouting(mainInput, mainOutput))
             }
+
             // Instrument : stereo out
             RackExtension.Type.instrument -> {
                 // Main out
-                re.addREProperty(
-                    AudioStereoPair(
-                        left = AudioSocket(
-                            "MainOutLeft",
-                            AudioSocketType.output,
-                            centerX - margin - audioSocket.image.width,
-                            centerY + margin - audioSocket.image.height / 2,
-                            audioSocket
-                        ),
-                        right = AudioSocket(
-                            "MainOutRight",
-                            AudioSocketType.output,
-                            centerX + margin,
-                            centerY + margin - audioSocket.image.height / 2,
-                            audioSocket
-                        )
+                val mainOutput = AudioStereoPair(
+                    left = AudioSocket(
+                        "MainOutLeft",
+                        AudioSocketType.output,
+                        centerX - margin - audioSocket.image.width,
+                        centerY + margin - audioSocket.image.height / 2,
+                        audioSocket
+                    ),
+                    right = AudioSocket(
+                        "MainOutRight",
+                        AudioSocketType.output,
+                        centerX + margin,
+                        centerY + margin - audioSocket.image.height / 2,
+                        audioSocket
                     )
                 )
+                re.addREProperty(mainOutput)
+                re.addREAutoRouting(StereoInstrumentRoutingHint(mainOutput))
+                re.addREAutoRouting(StereoAudioRoutingTarget(mainOutput))
             }
             // Helper/Note player: no in or out
             RackExtension.Type.helper, RackExtension.Type.note_player -> {

@@ -61,12 +61,7 @@ class AudioStereoPair(val left: AudioSocket, val right: AudioSocket) : IREProper
 -- stereo pair ${left.name} / ${right.name}            
 --------------------------------------------------------------------------
 ${left.motherboard()}
-${right.motherboard()}
-
-jbox.add_stereo_audio_routing_pair {
-  left = "${left.path}",
-  right = "${right.path}"
-}"""
+${right.motherboard()}"""
     }
 
     // device2D
