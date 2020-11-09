@@ -119,8 +119,8 @@ class REMgr(private val storage: Storage) {
     private fun addDeviceNameProperty(re: RackExtension, margin: Int) {
         val prop = REBuiltInProperty("DeviceName")
         val img = storage.getTapeHorizontalImageResource()
-        val (x, y) = re.getTopLeft()
-        Panel.values().forEach { panel ->
+        re.availablePanels.forEach { panel ->
+            val (x, y) = re.getTopLeft(panel)
             prop.addWidget(panel, REPropertyWidget.Type.device_name, img, x + margin, y + margin)
         }
         re.addREProperty(prop)
@@ -169,14 +169,19 @@ class REMgr(private val storage: Storage) {
 
     fun generateFileTree(re: RackExtension): FileTree {
 
-        // we look for (static) files under skeletons/common and files under skeletons/<plugin_type>
+        // we look for (static) files under skeletons/<plugin_type> and skeletons/common
+        // files under skeletons/<plugin_type> overrides file under skeletons/common
         // if the file is a regular file, it will be token processed
         // if the file is an image, it is simply copied
-        val resources = arrayOf("skeletons/common/", "skeleton/${re.info.type}/").flatMap { prefix ->
-            storage.resources
-                .filter {!it.path.endsWith("/") && it.path.startsWith(prefix) }
-                .map { resource ->
-                    Pair(resource.path.removePrefix(prefix),
+        val resources =
+            arrayOf("skeletons/${re.info.type}/", "skeletons/common/").flatMap { prefix ->
+                storage.resources
+                    .filter { !it.path.endsWith("/") && it.path.startsWith(prefix) }
+                    .map { resource -> Pair(resource.path.removePrefix(prefix), resource) }
+            }
+                .distinctBy { it.first }
+                .map { (path, resource) ->
+                    Pair(path,
                         FileTreeEntry(
                             resource = resource,
                             html = { generateResourceContent(re, resource) },
@@ -187,7 +192,6 @@ class REMgr(private val storage: Storage) {
                         )
                     )
                 }
-        }
 
         fun genDynamicImagePair(panel: Panel): Pair<String, FileTreeEntry> {
             val name = "GUI2D/${re.getPanelImageKey(panel)}.png"
@@ -211,7 +215,7 @@ class REMgr(private val storage: Storage) {
         }
 
         return mapOf(
-            *Panel.values().map { genDynamicImagePair(it) }.toTypedArray(),
+            *re.availablePanels.map { genDynamicImagePair(it) }.toTypedArray(),
             *re.getPropertyImages().map { genStaticImagePair(it) }.toTypedArray(),
             *resources.toTypedArray()
         )

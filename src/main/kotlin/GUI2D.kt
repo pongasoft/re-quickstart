@@ -1,8 +1,6 @@
 import kotlinx.browser.document
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
-import org.w3c.files.Blob
-import kotlin.js.Promise
 
 /**
  * Represents the GUI2D section of the rack extension */
@@ -18,7 +16,9 @@ class GUI2D(
         const val lowResScalingFactor = 5
         const val hiResWidth = 3770
         const val hiResHeight1U = 345
-        const val hiResRailWidth = 155
+        const val hiResBackRailWidth = 155
+        const val hiResNotePlayerBackRailWidth = 295
+        const val hiResNotePlayerFrontRailWidth = 90
         const val hiResFoldedHeight = 150
     }
 
@@ -28,6 +28,14 @@ class GUI2D(
         Panel.front, Panel.back -> hiResHeight1U * info.sizeInU
         Panel.folded_front, Panel.folded_back -> hiResFoldedHeight
     }
+
+    fun getRailSize(panel: Panel) = when(panel) {
+        Panel.front -> if(info.type == RackExtension.Type.note_player)  hiResNotePlayerFrontRailWidth else 0
+        Panel.back -> if(info.type == RackExtension.Type.note_player)  hiResNotePlayerBackRailWidth else hiResBackRailWidth
+        Panel.folded_back -> hiResBackRailWidth // note player are never folded
+        Panel.folded_front -> 0 // note player are never folded
+    }
+
 
     fun getPanelImageKey(panel: Panel) = "Panel_$panel"
 
@@ -41,8 +49,8 @@ class GUI2D(
 
                 // 1. draw the background
                 fillStyle = if (panel.isFront()) frontPanelColor else backPanelColor
-                val x = if (panel.isFront()) 0 else hiResRailWidth
-                val w = if (panel.isFront()) width else width - 2 * hiResRailWidth
+                val x = getRailSize(panel)
+                val w = width - 2 * x
                 fillRect(x.toDouble(), 0.toDouble(), w.toDouble(), height.toDouble())
 
                 // 2. Renders part of the information as text

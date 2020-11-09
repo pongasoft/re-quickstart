@@ -272,8 +272,22 @@ fun init() {
             // render the front panel
             renderPreview(re, Panel.front)
 
+            document.getElementById("re-preview-links")?.replaceWith(
+                document.create.div {
+                    id = "re-preview-links"
+                    re.availablePanels.forEach { panel ->
+                        a {
+                            onClickFunction = {
+                                renderPreview(re, panel)
+                            }
+                            + panel.toString().capitalize()
+                        }
+                        + " | "
+                    }
+                })
+
             // add links to render all panels
-            Panel.values().forEach { panel ->
+            re.availablePanels.forEach { panel ->
                 (document.getElementById("re-preview-$panel") as? HTMLAnchorElement)?.addEventListener("click", {
                     renderPreview(re, panel)
                 })

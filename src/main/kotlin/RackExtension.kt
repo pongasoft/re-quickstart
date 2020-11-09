@@ -54,6 +54,11 @@ class RackExtension(val info: Info) {
 
     private val _reAutoRouting: MutableCollection<IREAutoRouting> = mutableListOf()
 
+    val availablePanels get() = when(info.type) {
+        Type.note_player -> arrayOf(Panel.front, Panel.back)
+        else -> Panel.values()
+    }
+
     fun getPanelImageKey(panel: Panel) = _gui2D.getPanelImageKey(panel)
 
     fun generatePanel(panel: Panel) = _gui2D.generatePanelElement(panel)
@@ -70,7 +75,7 @@ class RackExtension(val info: Info) {
     fun getWidth() = _gui2D.getWidth()
     fun getHeight(panel: Panel) = _gui2D.getHeight(panel)
 
-    fun getTopLeft() = Pair(GUI2D.emptyMargin + GUI2D.hiResRailWidth, GUI2D.emptyMargin)
+    fun getTopLeft(panel: Panel) = Pair(GUI2D.emptyMargin + _gui2D.getRailSize(panel), GUI2D.emptyMargin)
 
     fun addREProperty(prop: IREProperty) {
 
@@ -106,7 +111,7 @@ class RackExtension(val info: Info) {
         // CMakeLists.txt
         setToken("cmake_project_name", info.productId.split(".").lastOrNull()?: "Blank")
 
-        val imageKeys = Panel.values().map { getPanelImageKey(it) } + getPropertyImages().map { it.key }
+        val imageKeys = availablePanels.map { getPanelImageKey(it) } + getPropertyImages().map { it.key }
         setToken("cmake-re_sources_2d", imageKeys.joinToString(separator = "\n") { "    \"\${RE_2D_SRC_DIR}/${it}.png\"" })
 
         // info.lua
@@ -136,7 +141,7 @@ class RackExtension(val info: Info) {
         setToken("texts-text_resources",
             _reProperties.flatMap { it.textResources().entries }.joinToString(separator = ",\n") { "    [\"${it.key}\"] = \"${it.value}\"" })
 
-        Panel.values().forEach { panel ->
+        availablePanels.forEach { panel ->
             // device_2D.lua
             setToken("device2D-${panel}_bg", _gui2D.getPanelImageKey(panel))
             setToken("device2D-$panel",
