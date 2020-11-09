@@ -1,5 +1,5 @@
-#ifndef RE_BLANK_PLUGIN_DEVICE_H
-#define RE_BLANK_PLUGIN_DEVICE_H
+#ifndef RE_[-cmake_project_name-]_DEVICE_H
+#define RE_[-cmake_project_name-]_DEVICE_H
 
 #include "logging.h"
 #include "JukeboxTypes.h"
@@ -25,4 +25,4 @@ protected:
   int fSampleRate;
 };
 
-#endif //RE_BLANK_PLUGIN_DEVICE_H
+#endif //RE_[-cmake_project_name-]_DEVICE_H

@@ -6,7 +6,7 @@ import kotlin.js.Promise
 /**
  * Maintains the information for each file in the zip archive. Will use permission and date to generate the
  * outcome archive. */
-open class StorageResource(val path: String, val date: Date?, val unixPermissions: Int?)
+sealed class StorageResource(val path: String, val date: Date?, val unixPermissions: Int?)
 
 /**
  * A file resource (text file) */

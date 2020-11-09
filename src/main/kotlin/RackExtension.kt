@@ -1,9 +1,7 @@
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLFormElement
-import org.w3c.files.Blob
 import org.w3c.xhr.FormData
-import kotlin.js.Promise
 
 /**
  * Represents the rack extension */
@@ -54,8 +52,6 @@ class RackExtension(val info: Info) {
 
     private val _reProperties: MutableCollection<IREProperty> = mutableListOf()
 
-    fun getPanelImageName(panel: Panel) = _gui2D.getPanelImageName(panel)
-
     fun getPanelImageKey(panel: Panel) = _gui2D.getPanelImageKey(panel)
 
     fun generatePanel(panel: Panel) = _gui2D.generatePanelElement(panel)
@@ -72,10 +68,7 @@ class RackExtension(val info: Info) {
     fun getWidth() = _gui2D.getWidth()
     fun getHeight(panel: Panel) = _gui2D.getHeight(panel)
 
-    fun getTopLeft(panel: Panel) = when (panel) {
-        Panel.front, Panel.folded_front -> Pair(GUI2D.emptyMargin, GUI2D.emptyMargin)
-        Panel.back, Panel.folded_back -> Pair(GUI2D.emptyMargin + GUI2D.hiResRailWidth, GUI2D.emptyMargin)
-    }
+    fun getTopLeft() = Pair(GUI2D.emptyMargin + GUI2D.hiResRailWidth, GUI2D.emptyMargin)
 
     fun addREProperty(prop: IREProperty) = _reProperties.add(prop)
 
@@ -83,175 +76,6 @@ class RackExtension(val info: Info) {
         val images = mutableSetOf<ImageResource>()
         _reProperties.forEach { images.addAll(it.getImageResources()) }
         return images.toList()
-    }
-
-    fun infoLua(): String {
-        return """
-format_version = "1.0"
-
--- Note that changing this file requires a Reason/Recon restart
-
--- Max 40 chars
-long_name = "${info.longName}"
-
--- Max 20 chars
-medium_name = "${info.mediumName}"
-
--- Max 10 chars
-short_name = "${info.shortName}"
-
-product_id = "${info.productId}"
-manufacturer = "${info.manufacturer}"
-version_number = "${info.version}"
-device_type = "${info.type}"
-supports_patches = false
-accepts_notes = ${info.type == Type.instrument}
-auto_create_track = ${info.type == Type.instrument}
-auto_create_note_lane = ${info.type == Type.instrument}
-supports_performance_automation = false
-device_height_ru = ${info.sizeInU}
-automation_highlight_color = {r = 60, g = 255, b = 2}
-"""
-    }
-
-    fun motherboardLua(): String {
-        return """
-format_version = "1.0"
-            
---------------------------------------------------------------------------
--- Custom properties
---------------------------------------------------------------------------
-local documentOwnerProperties = {}
-local rtOwnerProperties = {}
-local guiOwnerProperties = {}
-
-custom_properties = jbox.property_set {
-  gui_owner = {
-    properties = guiOwnerProperties
-  },
-
-  document_owner = {
-    properties = documentOwnerProperties
-  },
-	
-  rtc_owner = {
-    properties = {
-      instance = jbox.native_object{ },
-    }
-  },
-	
-  rt_owner = {
-    properties = rtOwnerProperties
-  }
-}
-
---------------------------------------------------------------------------
--- Audio Inputs/Outputs
---------------------------------------------------------------------------
-
-audio_outputs = {}
-audio_inputs = {}
-
-${_reProperties.map { it.motherboard() }.filter { it != "" }.joinToString(separator = "\n\n")}
-
---------------------------------------------------------------------------
--- CV Inputs/Outputs
---------------------------------------------------------------------------
-cv_inputs = {}
-cv_outputs = {}
-
-"""
-    }
-
-    fun realtimeControllerLua(): String {
-        return """
-format_version = "1.0"
-
-rtc_bindings = {
-  -- this will initialize the C++ object
-  { source = "/environment/system_sample_rate", dest = "/global_rtc/init_instance" },
-}
-
-global_rtc = {
-  init_instance = function(source_property_path, new_value)
-    local sample_rate = jbox.load_property("/environment/system_sample_rate")
-    local new_no = jbox.make_native_object_rw("Instance", { sample_rate })
-    jbox.store_property("/custom_properties/instance", new_no);
-  end,
-}
-
-rt_input_setup = {
-  notify = {
-${_reProperties.flatMap { it.rtInputSetup() }.joinToString(separator = ",\n") { "    \"$it\"" }}
-  }
-}
-
-sample_rate_setup = {
-  native = {
-    22050,
-    44100,
-    48000,
-    88200,
-    96000,
-    192000
-  },
-
-}
-"""
-    }
-
-    fun textsLua() = """
-format_version = "1.0"
-
--- english
-texts = {
-${_reProperties.flatMap { it.textResources().entries }.joinToString(separator = ",\n") { "    [\"${it.key}\"] = \"${it.value}\"" }}
-}
-"""
-
-    fun device2DLua(): String {
-        val content = Panel.values().map { panel ->
-            """
---------------------------------------------------------------------------
--- $panel
---------------------------------------------------------------------------
-$panel = {}
-
--- Background graphic
-$panel["${panelNodeName(panel)}"] = "${_gui2D.getPanelImageName(panel).removeSuffix(".png")}"
-
-${_reProperties.map { it.device2D(panel) }.filter { it != "" }.joinToString(separator = "\n")}"""
-        }.joinToString(separator = "\n")
-
-        return """
-format_version = "2.0"
-            
-$content"""
-    }
-
-    fun hdgui2DLua(): String {
-        val content = Panel.values().map { panel ->
-            """
---------------------------------------------------------------------------
--- $panel
---------------------------------------------------------------------------
-${panel}_widgets = {}
-
-${_reProperties.map { it.hdgui2D(panel) }.filter { it != "" }.joinToString(separator = "\n\n")}
-
-$panel = jbox.panel{
-  graphics = {
-    node = "${panelNodeName(panel)}",
-  },
-  widgets = ${panel}_widgets
-}"""
-        }.joinToString(separator = "\n")
-
-        return """
-format_version = "2.0"
-            
-$content
-"""
     }
 
     fun processContent(content: String) : String {
@@ -269,51 +93,51 @@ $content
           newTokens.getOrPut(key, {value})
         }
 
+        // CMakeLists.txt
         setToken("cmake_project_name", info.productId.split(".").lastOrNull()?: "Blank")
 
-        val imageKeys = Panel.values().map { getPanelImageKey(it) } + getPropertyImages()
-        setToken("re_sources_2d", imageKeys.joinToString(separator = "\n") { "    \"\${RE_2D_SRC_DIR}/${it}.png\"" })
+        val imageKeys = Panel.values().map { getPanelImageKey(it) } + getPropertyImages().map { it.key }
+        setToken("cmake-re_sources_2d", imageKeys.joinToString(separator = "\n") { "    \"\${RE_2D_SRC_DIR}/${it}.png\"" })
+
+        // info.lua
+        setToken("info-long_name", info.longName)
+        setToken("info-medium_name", info.mediumName)
+        setToken("info-short_name", info.shortName)
+        setToken("info-product_id", info.productId)
+        setToken("info-manufacturer", info.manufacturer)
+        setToken("info-version_number", info.version)
+        setToken("info-device_type", info.type.toString())
+        setToken("info-accepts_notes", (info.type == Type.instrument).toString())
+        setToken("info-auto_create_track", (info.type == Type.instrument).toString())
+        setToken("info-auto_create_note_lane", (info.type == Type.instrument).toString())
+        setToken("info-device_height_ru", info.sizeInU.toString())
+
+        // motherboard_def.lua
+        setToken("motherboard_def-properties",
+            _reProperties.map { it.motherboard() }.filter { it != "" }.joinToString(separator = "\n\n"))
+
+        // realtime_controller.lua
+        setToken("realtime_controller-rt_input_setup",
+            _reProperties.flatMap { it.rtInputSetup() }.joinToString(separator = ",\n") { "    \"$it\"" })
+
+        // texts.lua
+        setToken("texts-text_resources",
+            _reProperties.flatMap { it.textResources().entries }.joinToString(separator = ",\n") { "    [\"${it.key}\"] = \"${it.value}\"" })
+
+        Panel.values().forEach { panel ->
+            // device_2D.lua
+            setToken("device2D-${panel}_bg", _gui2D.getPanelImageKey(panel))
+            setToken("device2D-$panel",
+                _reProperties.map { it.device2D(panel) }.filter { it != "" }.joinToString(separator = "\n"))
+
+            // hdgui_2D.lua
+            setToken("hdgui2D-${panel}_widgets",
+                _reProperties.map { it.hdgui2D(panel) }.filter { it != "" }.joinToString(separator = "\n\n")
+            )
+        }
 
         val t = newTokens.mapKeys { (k,_) -> "[-$k-]" }
 
         return t
     }
-
-    /**
-     * Generates the (promise) of the zip file
-     * @return a (promise of a) pair where the first element is the name of the zip file and the second is the content */
-    fun generateZip(tree: FileTree): Promise<Pair<String, Blob>> {
-
-        val root = "${info.productId}-plugin"
-
-        val zip = JSZip()
-        val rootDir = zip.folder(root)
-
-        class ZipEntry(val name: String, val resource: StorageResource?, val content: Any)
-
-        return Promise.all(tree.map { (name, entry) ->
-            entry.zip.then { ZipEntry(name, entry.resource, it) }
-        }.toTypedArray()).then { array ->
-            array.forEach { entry ->
-                val fileOptions = object : JSZipFileOptions {}.apply {
-                  date = entry.resource?.date
-                  unixPermissions = entry.resource?.unixPermissions
-                }
-                rootDir.file(entry.name, entry.content, fileOptions)
-            }
-        }.then {
-            // generate the zip
-            val options = object : JSZipGeneratorOptions {}.apply {
-                type = "blob"
-                platform = "UNIX"
-            }
-
-            zip.generateAsync(options)
-        }.then {
-            // return as a pair
-            Pair("$root.zip", it as Blob)
-        }
-    }
-
-    private fun panelNodeName(panel: Panel) = "Panel_${panel}_Bg"
 }

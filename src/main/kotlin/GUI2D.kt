@@ -29,8 +29,6 @@ class GUI2D(
         Panel.folded_front, Panel.folded_back -> hiResFoldedHeight
     }
 
-    fun getPanelImageName(panel: Panel) = "${getPanelImageKey(panel)}.png"
-
     fun getPanelImageKey(panel: Panel) = "Panel_$panel"
 
     fun generatePanelElement(panel: Panel) =
@@ -56,11 +54,4 @@ class GUI2D(
             }
             this
         }
-
-    /**
-     * Generate the array of background images */
-    fun generateBackgroundBlobs(): Array<Promise<Pair<String, Blob>>> {
-        return Panel.values().map { panel -> generatePanelElement(panel).toNamedBlob(getPanelImageName(panel)) }
-            .toTypedArray()
-    }
 }

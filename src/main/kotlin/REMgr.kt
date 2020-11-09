@@ -4,12 +4,20 @@ import kotlinx.html.pre
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLImageElement
+import org.w3c.files.Blob
 import kotlin.js.Promise
 
 class FileTreeEntry(val html: () -> HTMLElement, val zip: Promise<Any>, val resource: StorageResource? = null)
+
 typealias FileTree = Map<String, FileTreeEntry>
 
 class REMgr(private val storage: Storage) {
+
+    companion object {
+        fun load(): Promise<REMgr> {
+            return Storage.load().then { REMgr(it) }
+        }
+    }
 
     fun createRE(form: HTMLFormElement): RackExtension {
 
@@ -104,8 +112,8 @@ class REMgr(private val storage: Storage) {
     private fun addDeviceNameProperty(re: RackExtension, margin: Int) {
         val prop = REBuiltInProperty("DeviceName")
         val img = storage.getTapeHorizontalImageResource()
+        val (x, y) = re.getTopLeft()
         Panel.values().forEach { panel ->
-            val (x, y) = re.getTopLeft(panel)
             prop.addWidget(panel, REPropertyWidget.Type.device_name, img, x + margin, y + margin)
         }
         re.addREProperty(prop)
@@ -117,8 +125,8 @@ class REMgr(private val storage: Storage) {
         val img = storage.getPlaceholderImageResource()
         val prop = REPlaceholderProperty(
             "Placeholder",
-            re.getWidth() - img.image.width,
-            re.getHeight(Panel.back) - img.image.height,
+            re.getWidth() - img.image.width - GUI2D.emptyMargin,
+            re.getHeight(Panel.back) - img.image.height - GUI2D.emptyMargin,
             img
         )
         re.addREProperty(prop)
@@ -133,11 +141,9 @@ class REMgr(private val storage: Storage) {
         this
     }
 
-    private fun generateTextContent(content: String) = document.create.pre { +content }
-
     private fun generateResourceContent(re: RackExtension, resource: StorageResource) = when (resource) {
         is FileResource -> document.create.pre { +re.processContent(resource.content) }
-        else -> document.create.pre { +"not implemented yet" }
+        is ImageResource -> generateStaticImgContent(resource)
     }
 
     private fun generateStaticImgContent(imageResource: ImageResource) = with(document.createElement("img")) {
@@ -156,32 +162,28 @@ class REMgr(private val storage: Storage) {
 
     fun generateFileTree(re: RackExtension): FileTree {
 
-        // we use common files and type specific files (not used at the moment)
-        val resources = storage.resources
-            .filter { it is FileResource &&
-                    !it.path.endsWith("/") &&
-                    (it.path.startsWith("skeletons/common/") || it.path.startsWith("skeleton/${re.info.type}/")) }
-            .map { resource ->
-                resource as FileResource
-                Pair(resource.path.removePrefix("skeletons/common/"),
-                    FileTreeEntry(
-                        resource = resource,
-                        html = { generateResourceContent(re, resource) },
-                        zip = Promise.resolve(re.processContent(resource.content))
+        // we look for (static) files under skeletons/common and files under skeletons/<plugin_type>
+        // if the file is a regular file, it will be token processed
+        // if the file is an image, it is simply copied
+        val resources = arrayOf("skeletons/common/", "skeleton/${re.info.type}/").flatMap { prefix ->
+            storage.resources
+                .filter {!it.path.endsWith("/") && it.path.startsWith(prefix) }
+                .map { resource ->
+                    Pair(resource.path.removePrefix(prefix),
+                        FileTreeEntry(
+                            resource = resource,
+                            html = { generateResourceContent(re, resource) },
+                            zip = when(resource) {
+                                is FileResource -> Promise.resolve(re.processContent(resource.content))
+                                is ImageResource -> Promise.resolve(resource.blob)
+                            }
+                        )
                     )
-                )
-            }
-
-        fun genTextPair(name: String, content: String) =
-            Pair(name,
-                FileTreeEntry(
-                    html = { generateTextContent(content) },
-                    zip = Promise.resolve(content)
-                )
-            )
+                }
+        }
 
         fun genDynamicImagePair(panel: Panel): Pair<String, FileTreeEntry> {
-            val name = "GUI2D/${re.getPanelImageName(panel)}"
+            val name = "GUI2D/${re.getPanelImageKey(panel)}.png"
             return Pair(name,
                 FileTreeEntry(
                     html = { generatePanelImgContent(re, panel) },
@@ -202,21 +204,43 @@ class REMgr(private val storage: Storage) {
         }
 
         return mapOf(
-            genTextPair("info.lua", re.infoLua()),
-            genTextPair("motherboard_def.lua", re.motherboardLua()),
-            genTextPair("realtime_controller.lua", re.realtimeControllerLua()),
-            genTextPair("Resources/English/texts.lua", re.textsLua()),
-            genTextPair("GUI2D/device_2d.lua", re.device2DLua()),
-            genTextPair("GUI2D/hdgui_2D.lua", re.hdgui2DLua()),
             *Panel.values().map { genDynamicImagePair(it) }.toTypedArray(),
             *re.getPropertyImages().map { genStaticImagePair(it) }.toTypedArray(),
             *resources.toTypedArray()
         )
     }
 
-    companion object {
-        fun load(): Promise<REMgr> {
-            return Storage.load().then { REMgr(it) }
+    /**
+     * Generates the (promise) of the zip file
+     * @return a (promise of a) pair where the first element is the name of the zip file and the second is the content */
+    fun generateZip(root: String, tree: FileTree): Promise<Pair<String, Blob>> {
+        val zip = JSZip()
+        val rootDir = zip.folder(root)
+
+        class ZipEntry(val name: String, val resource: StorageResource?, val content: Any)
+
+        return Promise.all(tree.map { (name, entry) ->
+            entry.zip.then { ZipEntry(name, entry.resource, it) }
+        }.toTypedArray()).then { array ->
+            array.forEach { entry ->
+                val fileOptions = object : JSZipFileOptions {}.apply {
+                  date = entry.resource?.date
+                  unixPermissions = entry.resource?.unixPermissions
+                }
+                rootDir.file(entry.name, entry.content, fileOptions)
+            }
+        }.then {
+            // generate the zip
+            val options = object : JSZipGeneratorOptions {}.apply {
+                type = "blob"
+                platform = "UNIX"
+            }
+
+            zip.generateAsync(options)
+        }.then {
+            // return as a pair
+            Pair("$root.zip", it as Blob)
         }
     }
+
 }

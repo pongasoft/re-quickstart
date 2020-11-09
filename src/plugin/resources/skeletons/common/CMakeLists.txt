@@ -21,7 +21,7 @@ endif()
 set(RE_2D_RENDER_ROOT "${RE_SDK_ROOT}/../RE2DRender" CACHE PATH "Location of RE2DRender")
 
 set(RE_CMAKE_ROOT_DIR "")
-set(RE_CMAKE_ROOT_DIR "../../pongasoft/re-cmake")
+#set(RE_CMAKE_ROOT_DIR "../../pongasoft/re-cmake")
 
 # If RE_CMAKE_ROOT_DIR is undefined/empty, it will fetch/download it from github
 # If RE_CMAKE_ROOT_DIR is defined, it should point to the (local) folder where re-cmake is located
@@ -55,7 +55,7 @@ set(re_sources_2d
     ${RE_2D_SRC_DIR}/hdgui_2D.lua
 
     # Images for the device
-[-re_sources_2d-]
+[-cmake-re_sources_2d-]
     )
 
 # Adding the RE plugin

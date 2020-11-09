@@ -308,7 +308,7 @@ fun init() {
             (document.getElementById("preview-action-info.lua") as? HTMLAnchorElement)?.click()
 
             // generate zip file
-            re.generateZip(tree).then { (name, blob) ->
+            reMgr.generateZip("${re.info.productId}-plugin", tree).then { (name, blob) ->
                 notification.info("generated $name")
                 val downloadAnchor = generateDownloadAnchor(name, blob)
                 document.findMetaContent("X-re-quickstart-download-link")?.let {
