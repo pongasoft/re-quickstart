@@ -6,7 +6,6 @@ import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.*
 import org.w3c.dom.url.URL
-import org.w3c.dom.url.URLSearchParams
 import org.w3c.files.Blob
 
 /**
@@ -258,7 +257,7 @@ fun init() {
     notification.info("### Rack Extension Plugin Generator Output [v$pluginVersion] ###")
 
     document.findMetaContent("X-re-quickstart-notification-welcome-message")?.let { message ->
-      message.split('|').forEach { notification.info(it) }
+        message.split('|').forEach { notification.info(it) }
     }
 
     elements["submit"]?.addListener("click") {
@@ -267,44 +266,40 @@ fun init() {
 
             val re = reMgr.createRE(form!!)
 
-            notification.info("Click")
-
             fun renderPreview(re: RackExtension, panel: Panel) {
-                val preview = reMgr.generatePreview(re, panel)
-                preview.id = "re-preview"
-                document.getElementById("re-preview")?.replaceWith(preview)
+                document.replaceElement("re-preview", reMgr.generatePreview(re, panel))
             }
 
-            // render the front panel
-            renderPreview(re, Panel.front)
-
-            document.getElementById("re-preview-links")?.replaceWith(
-                document.create.div {
-                    id = "re-preview-links"
+            document.replaceElement("re-preview-links",
+                document.create.ul {
                     re.availablePanels.forEach { panel ->
-                        a {
-                            onClickFunction = {
-                                renderPreview(re, panel)
+                        li {
+                            a {
+                                id = "re-preview-$panel"
+                                onClickFunction = {
+                                    renderPreview(re, panel)
+                                }
+                                +panel.toString().capitalize()
                             }
-                            + panel.toString().capitalize()
                         }
-                        + " | "
                     }
                 })
 
             // add links to render all panels
             re.availablePanels.forEach { panel ->
-                (document.getElementById("re-preview-$panel") as? HTMLAnchorElement)?.addEventListener("click", {
+                document.addClickListener("re-preview-$panel") {
                     renderPreview(re, panel)
-                })
+                }
             }
+
+            // we select the front panel
+            document.click("re-preview-front")
 
             val tree = reMgr.generateFileTree(re)
 
             // add links to preview all files included with the RE
-            document.getElementById("re-files-preview-links")?.replaceWith(
+            document.replaceElement("re-files-preview-links",
                 document.create.div {
-                    id = "re-files-preview-links"
                     ul {
                         tree.keys.sortedBy { it.toLowerCase() }.forEach { path ->
                             li {
@@ -312,8 +307,7 @@ fun init() {
                                     id = "preview-action-${path}"
                                     onClickFunction = {
                                         val content = tree[path]?.html?.invoke()!! // keys are from the map
-                                        content.id = "re-files-preview-content"
-                                        document.getElementById("re-files-preview-content")?.replaceWith(content)
+                                        document.replaceElement("re-files-preview-content", content)
                                     }
                                     +path
                                 }
@@ -325,17 +319,16 @@ fun init() {
             )
 
             // preview info
-            (document.getElementById("preview-action-info.lua") as? HTMLAnchorElement)?.click()
+            document.click("preview-action-info.lua")
+
+            document.show("re-blank-plugin")
 
             // generate zip file
             reMgr.generateZip("${re.info.productId}-plugin", tree).then { (name, blob) ->
-                notification.info("generated $name")
+                notification.info("Generated $name. Go to step 4 to download it.")
                 val downloadAnchor = generateDownloadAnchor(name, blob)
-                document.findMetaContent("X-re-quickstart-download-link")?.let {
-                    downloadAnchor.text = it
-                    notification.info(downloadAnchor)
-                }
-//            downloadAnchor.click()
+                downloadAnchor.text = name
+                document.replaceElement("re-download-link", downloadAnchor)
             }
         }
     }
@@ -347,17 +340,26 @@ fun init() {
 
     elements["manufacturer"]?.onChange {
         elements["short_name"]?.value?.let { shortName ->
-            if(shortName.isNotEmpty())
-            {
+            if (shortName.isNotEmpty()) {
                 val regex = Regex("[^A-Za-z0-9._]")
-                elements["product_id"]?.setComputedValue("com.${regex.replace(value, "").toLowerCase()}.${regex.replace(shortName, "")}")
+                elements["product_id"]?.setComputedValue(
+                    "com.${regex.replace(value, "").toLowerCase()}.${
+                        regex.replace(
+                            shortName,
+                            ""
+                        )
+                    }"
+                )
             }
         }
     }
 
     elements.forEach { (name, elt) ->
-        if(name != "submit")
-            elt?.onChange { maybeEnableSubmit() }
+        if (name != "submit")
+            elt?.onChange {
+                document.hide("re-blank-plugin")
+                maybeEnableSubmit()
+            }
     }
 }
 

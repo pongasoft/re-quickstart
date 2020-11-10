@@ -1,8 +1,7 @@
 import kotlinx.browser.window
-import org.w3c.dom.Document
-import org.w3c.dom.HTMLCanvasElement
-import org.w3c.dom.HTMLInputElement
-import org.w3c.dom.Image
+import kotlinx.dom.addClass
+import kotlinx.dom.removeClass
+import org.w3c.dom.*
 import org.w3c.dom.events.Event
 import org.w3c.fetch.RequestInit
 import org.w3c.fetch.Response
@@ -14,6 +13,48 @@ import kotlin.js.Promise
  * Finds (may not exist) the content of a meta entry whose name is provided */
 fun Document.findMetaContent(name: String): String? {
     return querySelector("meta[name='$name']")?.getAttribute("content")
+}
+
+/**
+ * Adds the `hidden` class to element which (via css) will hide it */
+fun Element.hide() {
+    addClass("hidden")
+}
+
+/**
+ * Removes the `hidden` class to element which (via css) will show it */
+fun Element.show() {
+    this.removeClass("hidden")
+}
+
+/**
+ * Shortcut to hide an element by its id */
+fun Document.hide(id: String) = getElementById(id)?.hide()
+
+/**
+ * Shortcut to show an element by its id */
+fun Document.show(id: String) = getElementById(id)?.show()
+
+/**
+ * Shortcut to click an element by its id */
+fun Document.click(id: String) = (getElementById(id) as? HTMLElement)?.click()
+
+/**
+ * Shortcut to add a `click` listener to an element by its id */
+fun Document.addClickListener(id: String, block: (event: Event) -> Unit) =
+    getElementById(id)?.addEventListener("click", {event -> block(event)})
+
+/**
+ * Look for an element with the given id and replace it with the new element. If the new element does not have an
+ * id, it will be set automatically to the old one */
+fun Document.replaceElement(id: String, element: Element) {
+    getElementById(id)?.let {
+        console.log("old element id = ${element.id} / $id")
+        if(element.id.isEmpty())
+            element.id = id
+        console.log("new element id = ${element.id} / $id")
+        it.replaceWith(element)
+    }
 }
 
 /**

@@ -6,25 +6,38 @@
     <meta name="X-re-quickstart-download-link" content="Plugin Download link">
     <meta name="X-re-quickstart-download-link" content="1.0.0">
     <meta name="X-re-quickstart-notification-welcome-message" content="[OK] Ready.|Fill the form above and click 'Generate blank plugin'|Waiting for user input...">
+    <link href="css/main.css" rel="stylesheet">
 </head>
-<body>
+<body class="quickstart-web">
 <h1>Rack Extension - Quick Start</h1>
+<h2>Step 1. Fill out the form</h2>
 <div id="re-quickstart-form">Initializing... (if this message does not disappear, check that javascript is enabled)</div>
-<div id="re-preview-links"></div>
-<div id="re-preview"></div>
-<table>
-    <tbody>
-    <tr>
-        <td style="vertical-align: top">
-            <div id="re-files-preview-links"></div>
-        </td>
-        <td id="re-files-preview" style="vertical-align: top">
-            <div id="re-files-preview-content"></div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+
 <pre id="notification"></pre>
+
+<div id="re-blank-plugin" class="hidden">
+    <h2 id="step2">Step 2. Preview the Rack Extension UI</h2>
+    <div id="re-preview-links"></div>
+    <div id="re-preview"></div>
+
+    <h2 id="step3">Step 3. Preview the Rack Extension files</h2>
+    <table>
+        <tbody>
+        <tr>
+            <td style="vertical-align: top">
+                <div id="re-files-preview-links"></div>
+            </td>
+            <td id="re-files-preview" style="vertical-align: top">
+                <div id="re-files-preview-content"></div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Step 4. Download the Rack Extension</h2>
+    Download the zip file <div id="re-download-link"></div>
+
+</div>
 <script type="text/javascript" src="js/jszip.min.js"></script>
 <script type="text/javascript" src="re-quickstart.js"></script>
 </body>
