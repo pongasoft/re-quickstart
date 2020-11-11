@@ -1,3 +1,18 @@
 .hidden {
   display: none;
 }
+
+.active {
+  color: white;
+  background-color: black;
+  padding: 2px;
+}
+
+img#re-preview {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#re-preview-container {
+  max-width: 754px;
+}

@@ -49,10 +49,8 @@ fun Document.addClickListener(id: String, block: (event: Event) -> Unit) =
  * id, it will be set automatically to the old one */
 fun Document.replaceElement(id: String, element: Element) {
     getElementById(id)?.let {
-        console.log("old element id = ${element.id} / $id")
         if(element.id.isEmpty())
             element.id = id
-        console.log("new element id = ${element.id} / $id")
         it.replaceWith(element)
     }
 }

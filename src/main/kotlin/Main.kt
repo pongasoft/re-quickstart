@@ -20,6 +20,7 @@ class Notification(id: String? = null) {
                 div.classList.add(status)
             div.appendChild(document.createTextNode(message))
             element.appendChild(div)
+            element.scrollTop = element.scrollHeight.toDouble()
         } else {
             println("[${status ?: "info"}] $message")
         }
@@ -268,59 +269,72 @@ fun init() {
 
             fun renderPreview(re: RackExtension, panel: Panel) {
                 document.replaceElement("re-preview", reMgr.generatePreview(re, panel))
-            }
 
-            document.replaceElement("re-preview-links",
-                document.create.ul {
-                    re.availablePanels.forEach { panel ->
-                        li {
-                            a {
-                                id = "re-preview-$panel"
-                                onClickFunction = {
-                                    renderPreview(re, panel)
+                document.replaceElement("re-preview-links",
+                    document.create.ul {
+                        re.availablePanels.forEach { p ->
+                            li {
+                                if(p != panel) {
+                                    a {
+                                        id = "re-preview-$p"
+                                        onClickFunction = {
+                                            renderPreview(re, p)
+                                        }
+                                        +p.toString().capitalize()
+                                    }
+                                } else {
+                                    span("active") {
+                                        +p.toString().capitalize()
+                                    }
                                 }
-                                +panel.toString().capitalize()
                             }
                         }
-                    }
-                })
-
-            // add links to render all panels
-            re.availablePanels.forEach { panel ->
-                document.addClickListener("re-preview-$panel") {
-                    renderPreview(re, panel)
-                }
+                    })
             }
 
             // we select the front panel
-            document.click("re-preview-front")
+            renderPreview(re, Panel.front)
 
             val tree = reMgr.generateFileTree(re)
 
             // add links to preview all files included with the RE
-            document.replaceElement("re-files-preview-links",
-                document.create.div {
-                    ul {
-                        tree.keys.sortedBy { it.toLowerCase() }.forEach { path ->
-                            li {
-                                a {
-                                    id = "preview-action-${path}"
-                                    onClickFunction = {
-                                        val content = tree[path]?.html?.invoke()!! // keys are from the map
-                                        document.replaceElement("re-files-preview-content", content)
-                                    }
-                                    +path
-                                }
-                            }
+            fun renderFilePreview(p: String) {
+                // render the content
+                tree[p]?.html?.invoke()?.let { content ->
+                    document.replaceElement("re-files-preview-content", content)
+                }
 
+                // regenerate the list of links
+                document.replaceElement("re-files-preview-links",
+                    document.create.div {
+                        ul {
+                            tree.keys.sortedBy { it.toLowerCase() }.forEach { path ->
+                                li {
+                                    if(path != p) {
+                                        a {
+                                            id = "preview-action-${path}"
+                                            onClickFunction = {
+                                                renderFilePreview(path)
+                                            }
+                                            +path
+                                        }
+                                    } else {
+                                        span("active") {
+                                            +path
+                                        }
+                                    }
+                                }
+
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
 
-            // preview info
-            document.click("preview-action-info.lua")
+            // we preview info
+            renderFilePreview("info.lua")
 
+            // we reveal the rest of the page
             document.show("re-blank-plugin")
 
             // generate zip file

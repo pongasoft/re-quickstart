@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+
 plugins {
     kotlin("js") version "1.4.10"
 }
@@ -28,11 +30,13 @@ kotlin {
     }
 }
 
+val pluginZipFilename = "plugin-${project.version}.zip"
+
 // Creates the zip file loaded at runtime (we store it under buildDir/assets)
 val zipTask = tasks.create<Zip>("zip") {
     from("src/plugin/resources")
     include("**/*")
-    archiveFileName.set("plugin-${project.version}.zip")
+    archiveFileName.set(pluginZipFilename)
     destinationDirectory.set(File(buildDir, "assets"))
 }
 
@@ -43,3 +47,14 @@ kotlin.sourceSets.named("main") {
 
 // make sure the zip file is always built
 tasks.findByName("processResources")?.dependsOn(zipTask)
+
+// deploy task copies the relevant files to the website folder hosting it
+val deployDir = File("/Volumes/Development/local/pongasoft-www/re-quickstart")
+
+val kotlinWebpackTask = tasks.getByName<KotlinWebpack>("browserProductionWebpack")
+
+tasks.create<Copy>("deploy") {
+    from(kotlinWebpackTask.destinationDirectory)
+    into(deployDir)
+    include(pluginZipFilename, kotlinWebpackTask.outputFileName, "js/jszip.min.js")
+}.dependsOn("build")

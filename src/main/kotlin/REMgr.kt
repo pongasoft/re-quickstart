@@ -1,4 +1,5 @@
 import kotlinx.browser.document
+import kotlinx.dom.addClass
 import kotlinx.html.dom.create
 import kotlinx.html.pre
 import org.w3c.dom.HTMLElement
@@ -144,7 +145,9 @@ class REMgr(private val storage: Storage) {
     fun generatePreview(re: RackExtension, panel: Panel) = with(document.createElement("img")) {
         this as HTMLImageElement
         src = re.generateFullPanel(panel).toDataURL(type = "image/png")
-        width = re.getWidth() / GUI2D.lowResScalingFactor
+        document.findMetaContent("X-re-quickstart-re-preview-classes")?.let {
+            it.split("|").forEach { c -> addClass(c) }
+        }
         this
     }
 
@@ -156,14 +159,14 @@ class REMgr(private val storage: Storage) {
     private fun generateStaticImgContent(imageResource: ImageResource) = with(document.createElement("img")) {
         this as HTMLImageElement
         src = imageResource.image.src
-        width = imageResource.image.width / GUI2D.lowResScalingFactor
+        document.findMetaContent("X-re-quickstart-re-files-preview-classes")?.let { addClass(it) }
         this
     }
 
     private fun generatePanelImgContent(re: RackExtension, panel: Panel) = with(document.createElement("img")) {
         this as HTMLImageElement
         src = re.generatePanel(panel).toDataURL("image/png")
-        width = re.getWidth() / GUI2D.lowResScalingFactor
+        document.findMetaContent("X-re-quickstart-re-files-preview-classes")?.let { addClass(it) }
         this
     }
 
