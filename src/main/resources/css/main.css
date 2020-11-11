@@ -2,7 +2,7 @@
   display: none;
 }
 
-.active {
+#re-files-preview-links .active {
   color: white;
   background-color: black;
   padding: 2px;
@@ -15,4 +15,31 @@ img#re-preview {
 
 #re-preview-container {
   max-width: 754px;
+}
+
+ul#re-preview-links {
+  padding: 10px 16px;
+  list-style: none;
+  background-color: #eee;
+}
+
+ul#re-preview-links li {
+  display: inline;
+  font-size: 18px;
+}
+
+ul#re-preview-links li+li:before {
+  padding: 8px;
+  color: black;
+  content: "|\00a0";
+}
+
+ul#re-preview-links li a {
+  color: #0275d8;
+  text-decoration: none;
+}
+
+ul#re-preview-links li a:hover {
+  color: #01447e;
+  text-decoration: underline;
 }

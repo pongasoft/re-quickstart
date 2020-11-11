@@ -273,7 +273,7 @@ fun init() {
                 document.replaceElement("re-preview-links",
                     document.create.ul {
                         re.availablePanels.forEach { p ->
-                            li {
+                            li(if(p == panel) "active" else null) {
                                 if(p != panel) {
                                     a {
                                         id = "re-preview-$p"
@@ -283,9 +283,7 @@ fun init() {
                                         +p.toString().capitalize()
                                     }
                                 } else {
-                                    span("active") {
-                                        +p.toString().capitalize()
-                                    }
+                                    +p.toString().capitalize()
                                 }
                             }
                         }
@@ -298,9 +296,9 @@ fun init() {
             val tree = reMgr.generateFileTree(re)
 
             // add links to preview all files included with the RE
-            fun renderFilePreview(p: String) {
+            fun renderFilePreview(path: String) {
                 // render the content
-                tree[p]?.html?.invoke()?.let { content ->
+                tree[path]?.html?.invoke()?.let { content ->
                     document.replaceElement("re-files-preview-content", content)
                 }
 
@@ -308,20 +306,18 @@ fun init() {
                 document.replaceElement("re-files-preview-links",
                     document.create.div {
                         ul {
-                            tree.keys.sortedBy { it.toLowerCase() }.forEach { path ->
-                                li {
-                                    if(path != p) {
+                            tree.keys.sortedBy { it.toLowerCase() }.forEach { p ->
+                                li(if(path == p) "active" else null) {
+                                    if(p != path) {
                                         a {
-                                            id = "preview-action-${path}"
+                                            id = "preview-action-${p}"
                                             onClickFunction = {
-                                                renderFilePreview(path)
+                                                renderFilePreview(p)
                                             }
-                                            +path
+                                            +p
                                         }
                                     } else {
-                                        span("active") {
-                                            +path
-                                        }
+                                            +p
                                     }
                                 }
 
