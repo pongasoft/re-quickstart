@@ -5,37 +5,50 @@
     <title>Rack Extension - Quick Start</title>
     <meta name="X-re-quickstart-download-link" content="Plugin Download link">
     <meta name="X-re-quickstart-download-link" content="1.0.0">
-    <meta name="X-re-quickstart-notification-welcome-message" content="[OK] Ready.|Fill the form above and click 'Generate blank plugin'|Waiting for user input...">
+    <meta name="X-re-quickstart-notification-welcome-message"
+          content="[OK] Ready.|Fill the form above and click 'Generate blank plugin'|Waiting for user input...">
     <link href="css/main.css" rel="stylesheet">
 </head>
 <body class="quickstart-web">
-<h1>Rack Extension - Quick Start</h1>
-<h2>Step 1. Fill out the form</h2>
-<div id="re-quickstart-form">Initializing... (if this message does not disappear, check that javascript is enabled)</div>
+<h2>Rack Extension - Quick Start</h2>
 
-<pre id="notification"></pre>
+<section id="re-info">
+    <h3>Step 1. Fill out the form</h3>
+    <div id="re-quickstart-form">Initializing... (if this message does not disappear, check that javascript is
+        enabled)
+    </div>
+
+    <pre id="notification"></pre>
+</section>
 
 <div id="re-blank-plugin" class="hidden">
-    <h2 id="step2">Step 2. Preview the Rack Extension UI</h2>
-    <div id="re-preview-links"></div>
-    <div id="re-preview-container"><div id="re-preview"></div></div>
+    <section id="re-preview-gui">
+        <h3 id="step2">Step 2. Preview the GUI</h3>
+        <div id="re-preview-gui-links"></div>
+        <div id="re-preview-gui-content"></div>
+    </section>
 
-    <h2 id="step3">Step 3. Preview the Rack Extension files</h2>
-    <table>
-        <tbody>
-        <tr>
-            <td style="vertical-align: top">
-                <div id="re-files-preview-links"></div>
-            </td>
-            <td id="re-files-preview" style="vertical-align: top">
-                <div id="re-files-preview-content"></div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <section id="re-preview-files">
+        <h3 id="step3">Step 3. Preview the files</h3>
+        <table>
+            <tbody>
+            <tr>
+                <td class="links">
+                    <div id="re-preview-files-links"></div>
+                </td>
+                <td class="content">
+                    <div id="re-preview-files-content"></div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
 
-    <h2>Step 4. Download the Rack Extension</h2>
-    Download the zip file <div id="re-download-link"></div>
+    <section id="re-download">
+        <h3>Step 4. Download the plugin</h3>
+        Download the zip file
+        <div id="re-download-link"></div>
+    </section>
 
 </div>
 <script type="text/javascript" src="js/jszip.min.js"></script>

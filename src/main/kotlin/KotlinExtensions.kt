@@ -181,7 +181,6 @@ fun Image.Companion.asyncLoad(src: String) : Promise<Image> {
             reject(Exception("Error loading image [$src]"))
         })
         image.addEventListener("load", {
-            console.log("Image loaded [$src]")
             resolve(image)
         })
     }

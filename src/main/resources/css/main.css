@@ -2,44 +2,55 @@
   display: none;
 }
 
-#re-files-preview-links .active {
-  color: white;
-  background-color: black;
-  padding: 2px;
+/* Step 2 - Preview GUI*/
+#re-preview-gui {
+  max-width: 754px;
 }
 
-img#re-preview {
+img {
     max-width: 100%;
     max-height: 100%;
 }
 
-#re-preview-container {
-  max-width: 754px;
-}
-
-ul#re-preview-links {
+ul#re-preview-gui-links {
   padding: 10px 16px;
   list-style: none;
   background-color: #eee;
 }
 
-ul#re-preview-links li {
+ul#re-preview-gui-links li {
   display: inline;
   font-size: 18px;
 }
 
-ul#re-preview-links li+li:before {
+ul#re-preview-gui-links li+li:before {
   padding: 8px;
   color: black;
   content: "|\00a0";
 }
 
-ul#re-preview-links li a {
+ul#re-preview-gui-links li a {
   color: #0275d8;
   text-decoration: none;
 }
 
-ul#re-preview-links li a:hover {
+ul#re-preview-gui-links li a:hover {
   color: #01447e;
   text-decoration: underline;
+}
+
+/* Step 3 - Preview files */
+
+#re-preview-files-links .active {
+  color: white;
+  background-color: black;
+  padding: 2px;
+}
+
+#re-preview-files table td {
+  vertical-align: top;
+}
+
+#re-preview-files pre {
+  white-space: pre-wrap;
 }

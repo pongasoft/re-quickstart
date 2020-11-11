@@ -116,7 +116,7 @@ class OptionSelectEntry(
         with(tag) {
             select {
                 name = entry.name
-
+                id = entry.name
                 entry.options?.forEach { o ->
                     option {
                         value = o.first
@@ -249,13 +249,17 @@ fun init() {
         document.getElementById(entry.name) as? HTMLInputElement
     }
 
+    val selectElements = entries.filterIsInstance<OptionSelectEntry>().associateBy({ it.name }) { entry ->
+        document.getElementById(entry.name) as? HTMLSelectElement
+    }
+
     fun maybeEnableSubmit() {
         elements["submit"]?.disabled = elements.values.any { it?.value?.isEmpty() ?: false }
     }
 
     val notification = Notification("notification")
 
-    notification.info("### Rack Extension Plugin Generator Output [v$pluginVersion] ###")
+    notification.info("### Rack Extension Plugin Generator Console [v$pluginVersion] ###")
 
     document.findMetaContent("X-re-quickstart-notification-welcome-message")?.let { message ->
         message.split('|').forEach { notification.info(it) }
@@ -268,15 +272,14 @@ fun init() {
             val re = reMgr.createRE(form!!)
 
             fun renderPreview(re: RackExtension, panel: Panel) {
-                document.replaceElement("re-preview", reMgr.generatePreview(re, panel))
+                document.replaceElement("re-preview-gui-content", reMgr.generatePreview(re, panel))
 
-                document.replaceElement("re-preview-links",
+                document.replaceElement("re-preview-gui-links",
                     document.create.ul {
                         re.availablePanels.forEach { p ->
                             li(if(p == panel) "active" else null) {
                                 if(p != panel) {
                                     a {
-                                        id = "re-preview-$p"
                                         onClickFunction = {
                                             renderPreview(re, p)
                                         }
@@ -299,18 +302,17 @@ fun init() {
             fun renderFilePreview(path: String) {
                 // render the content
                 tree[path]?.html?.invoke()?.let { content ->
-                    document.replaceElement("re-files-preview-content", content)
+                    document.replaceElement("re-preview-files-content", content)
                 }
 
                 // regenerate the list of links
-                document.replaceElement("re-files-preview-links",
+                document.replaceElement("re-preview-files-links",
                     document.create.div {
                         ul {
                             tree.keys.sortedBy { it.toLowerCase() }.forEach { p ->
                                 li(if(path == p) "active" else null) {
                                     if(p != path) {
                                         a {
-                                            id = "preview-action-${p}"
                                             onClickFunction = {
                                                 renderFilePreview(p)
                                             }
@@ -370,6 +372,12 @@ fun init() {
                 document.hide("re-blank-plugin")
                 maybeEnableSubmit()
             }
+    }
+
+    selectElements.forEach { (_, elt) ->
+        elt?.addEventListener("change", {
+            document.hide("re-blank-plugin")
+        })
     }
 }
 
