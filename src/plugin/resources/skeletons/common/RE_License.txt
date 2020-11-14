@@ -1,4 +1,4 @@
-Source: https://developer.reasonstudios.com/agreements/Agreements#_rack_extension_sdk_license_agreement
+Source: https://developer.reasonstudios.com/agreements/rack-extension-sdk-license-agreement
 
 The Rack Extension SDK, also named “Jukebox SDK”, is provided by Reason Studios Aktiebolag, reg. no. 556546-2206, Hornsbruksgatan 23, SE-117 34 Stockholm, Sweden, ("Reason Studios") and your use thereof is subject to your continued compliance with the terms and conditions included herein.
 

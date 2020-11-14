@@ -46,8 +46,10 @@ Release Notes
 #### 2020-11-12 - 1.0.0
 * First release
 
-License
-=======
+Licensing
+=========
 
-Apache 2.0
+* Apache 2.0 License. This project can be used according to the terms of the Apache 2.0 license.
+
+* This project includes some stock images that come with the Rack Extension SDK and are used under the terms of the [Rack Extension SDK License](https://developer.reasonstudios.com/agreements/rack-extension-sdk-license-agreement)
 
