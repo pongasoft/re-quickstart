@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2020 pongasoft
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ * @author Yan Pujante
+ */
+
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLFormElement
@@ -46,25 +64,47 @@ class RackExtension(val info: Info) {
         }
     }
 
-    private val _tokens : Map<String, String> by lazy { generateTokens() }
+    /**
+     * Defines content processing (token replacement) */
+    interface ContentProcessor {
+        fun processContent(content: String) : String
+    }
 
-    private val _gui2D: GUI2D = GUI2D(info)
+    /**
+     * The GUI for the panel itself (background image) */
+    private val _panelGUI: PanelGUI = PanelGUI(info)
 
+    /**
+     * List of all the properties (add via [addREProperty]) */
     private val _reProperties: MutableCollection<IREProperty> = mutableListOf()
 
+    /**
+     * List of all the auto routing (add via [addREAutoRouting]) */
     private val _reAutoRouting: MutableCollection<IREAutoRouting> = mutableListOf()
 
+    /**
+     * Which panels are available depend on type of device (for note players, there is no folded panels) */
     val availablePanels get() = when(info.type) {
         Type.note_player -> arrayOf(Panel.front, Panel.back)
         else -> Panel.values()
     }
 
-    fun getPanelImageKey(panel: Panel) = _gui2D.getPanelImageKey(panel)
+    /**
+     * The image key (used in device_2D.lua and hdgui_2D.lua) */
+    fun getPanelImageKey(panel: Panel) = _panelGUI.getPanelImageKey(panel)
 
-    fun generatePanel(panel: Panel) = _gui2D.generatePanelElement(panel)
+    /**
+     * Generates the panel
+     * @return the canvas for further processing/rendering */
+    fun generatePanelCanvas(panel: Panel) = _panelGUI.generatePanelElement(panel)
 
-    fun generateFullPanel(panel: Panel): HTMLCanvasElement {
-        val canvas = _gui2D.generatePanelElement(panel)
+    /**
+     * Generates the panel preview which consists of the panel background and all properties rendered
+     * (like audio sockets, display name, etc...)
+     *
+     * @return the canvas for further processing/rendering */
+    fun generatePanelPreviewCanvas(panel: Panel): HTMLCanvasElement {
+        val canvas = generatePanelCanvas(panel)
         with(canvas.getContext("2d")) {
             this as CanvasRenderingContext2D
             _reProperties.forEach { prop -> prop.render(panel, this) }
@@ -72,11 +112,23 @@ class RackExtension(val info: Info) {
         return canvas
     }
 
-    fun getWidth() = _gui2D.getWidth()
-    fun getHeight(panel: Panel) = _gui2D.getHeight(panel)
+    /**
+     * @return the width of the rack extension (which is fixed and does not depend on the panel) */
+    fun getWidth() = _panelGUI.getWidth()
 
-    fun getTopLeft(panel: Panel) = Pair(GUI2D.emptyMargin + _gui2D.getRailSize(panel), GUI2D.emptyMargin)
+    /**
+     * @return the height of the rack extension (depends on whether the panel is folded and the size in U) */
+    fun getHeight(panel: Panel) = _panelGUI.getHeight(panel)
 
+    /**
+     * Returns the coordinates of the top left corner where it is safe to draw. This accounts for the required empty
+     * margin (as defined by the RE SDK) and the rails (empty space that shows the rails or in the case of note player
+     * an area that is discarded if you draw on it!)
+     */
+    fun getTopLeft(panel: Panel) = Pair(PanelGUI.emptyMargin + _panelGUI.getRailSize(panel), PanelGUI.emptyMargin)
+
+    /**
+     * Adds a property to the Rack Extension. */
     fun addREProperty(prop: IREProperty) {
 
         _reProperties.add(prop)
@@ -85,22 +137,36 @@ class RackExtension(val info: Info) {
             addREAutoRouting(StereoAudioRoutingPair(prop))
     }
 
+    /**
+     * Adds auto routing information to the Rack Extension. */
     fun addREAutoRouting(routing: IREAutoRouting) = _reAutoRouting.add(routing)
 
+    /**
+     * Collect all (unique) property images across all panels. For example the tape representing the device name */
     fun getPropertyImages(): List<ImageResource> {
         val images = mutableSetOf<ImageResource>()
         _reProperties.forEach { images.addAll(it.getImageResources()) }
         return images.toList()
     }
 
-    fun processContent(content: String) : String {
-        var processedContent = content
-        for((tokenName, tokenValue) in _tokens) {
-          processedContent = processedContent.replace(tokenName, tokenValue)
+    /**
+     * Generate the content processor which will do token replacement for all text files in the plugin  */
+    fun getContentProcessor() = object : ContentProcessor {
+
+        val tokens = generateTokens()
+
+        // simply replace each token in the content
+        override fun processContent(content: String): String {
+            var processedContent = content
+            for((tokenName, tokenValue) in tokens) {
+              processedContent = processedContent.replace(tokenName, tokenValue)
+            }
+            return processedContent
         }
-        return processedContent
     }
 
+    /**
+     * A token is of the form `[-xxx-]` and any such string will be replaced with its equivalent value */
     private fun generateTokens() : Map<String, String> {
         val newTokens = mutableMapOf<String, String>()
 
@@ -143,7 +209,7 @@ class RackExtension(val info: Info) {
 
         availablePanels.forEach { panel ->
             // device_2D.lua
-            setToken("device2D-${panel}_bg", _gui2D.getPanelImageKey(panel))
+            setToken("device2D-${panel}_bg", _panelGUI.getPanelImageKey(panel))
             setToken("device2D-$panel",
                 _reProperties.map { it.device2D(panel) }.filter { it != "" }.joinToString(separator = "\n"))
 

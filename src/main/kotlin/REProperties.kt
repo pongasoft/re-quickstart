@@ -1,5 +1,25 @@
+/*
+ * Copyright (c) 2020 pongasoft
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ * @author Yan Pujante
+ */
+
 import org.w3c.dom.CanvasRenderingContext2D
 
+/**
+ * A Rack extension has 2 or 4 panels (only note players have only 2) */
 enum class Panel {
     front,
     back,
@@ -46,12 +66,22 @@ interface IREProperty {
      *         Returns empty string if there is no widget for the given panel */
     fun hdgui2D(panel: Panel): String
 
+    /**
+     * Render this property in the given panel (draws itself in the provided canvas) */
     fun render(panel: Panel, ctx: CanvasRenderingContext2D)
 
+    /**
+     * @return the list of image resources used by this property (in general one but a property can have different
+     *         representations based on the panel it is being rendered on) */
     fun getImageResources() : List<ImageResource>
 
+    /**
+     * @return the list of input setup for `realtime_controller.lua` (properties that you want to be notified on when
+     *         they change) */
     fun rtInputSetup(): List<String>
 
+    /**
+     * @return the map of text resources used by this property for `Resources/English/texts.lua` */
     fun textResources() : Map<String, String>
 }
 
@@ -71,6 +101,10 @@ abstract class REProperty(val name: String) : IREProperty {
      * Map of panel -> widget */
     private val _widgets: MutableCollection<REPropertyWidget> = mutableListOf()
 
+    /**
+     * Add a widget for the given panel. In this version only `device_name` is used and the other properties
+     * are audio sockets. This code can be expanded based on needs.
+     */
     fun addWidget(
         panel: Panel,
         type: REPropertyWidget.Type,
@@ -84,10 +118,13 @@ abstract class REProperty(val name: String) : IREProperty {
         }
     )
 
+    // getImageResources
     override fun getImageResources() = _widgets.map { it.imageResource }
 
     fun widgetCount(panel: Panel) = _widgets.count { it.panel == panel }
 
+    /**
+     * Adds a widget. Subclasses can use this method */
     protected fun addWidget(widget: REPropertyWidget) = _widgets.add(widget)
 
     // device2D

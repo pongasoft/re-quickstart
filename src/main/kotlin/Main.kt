@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2020 pongasoft
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ * @author Yan Pujante
+ */
+
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.dom.createElement
@@ -13,6 +31,7 @@ import org.w3c.files.Blob
 class Notification(id: String? = null) {
     val element = id?.let { document.getElementById(it) }
 
+    // add a text line
     private fun addTextLine(message: String, status: String? = null) {
         if (element != null) {
             val div = document.createElement("div")
@@ -20,12 +39,14 @@ class Notification(id: String? = null) {
                 div.classList.add(status)
             div.appendChild(document.createTextNode(message))
             element.appendChild(div)
+            // this makes sure that the last entry is visible if the notification has a scroll bar
             element.scrollTop = element.scrollHeight.toDouble()
         } else {
             println("[${status ?: "info"}] $message")
         }
     }
 
+    // add an element (ex: span, link, etc...)
     private fun addElement(elt: Element, status: String? = null) {
         if (element != null) {
             val div = document.createElement("div")
@@ -33,6 +54,7 @@ class Notification(id: String? = null) {
                 div.classList.add(status)
             div.appendChild(elt)
             element.appendChild(div)
+            element.scrollTop = element.scrollHeight.toDouble()
         }
     }
 
@@ -54,8 +76,7 @@ class Notification(id: String? = null) {
 }
 
 /**
- * Encapsulates the entries that the user fills out to customize the blank plugin
- */
+ * Encapsulates the entries that the user fills out to customize the blank plugin */
 abstract class OptionEntry(
     val name: String,
     val label: String? = null,
@@ -66,6 +87,8 @@ abstract class OptionEntry(
     abstract fun render(tag: HtmlBlockTag)
 }
 
+/**
+ * Entries of type `input` (like text fields or checkboxes) */
 class OptionInputEntry(
     name: String,
     label: String? = null,
@@ -102,6 +125,8 @@ class OptionInputEntry(
     }
 }
 
+/**
+ * Entries of type `select` for drop down selection */
 class OptionSelectEntry(
     name: String,
     label: String? = null,
@@ -129,10 +154,8 @@ class OptionSelectEntry(
     }
 }
 
-
 /**
- * Extension function to handle `OptionEntry`
- */
+ * Extension function to handle `OptionEntry` */
 fun TBODY.optionEntry(entry: OptionEntry): Unit = tr {
     td("name") { entry.label?.let { label { htmlFor = entry.name; +entry.label } } }
     td("control") { entry.render(this) }
@@ -140,11 +163,9 @@ fun TBODY.optionEntry(entry: OptionEntry): Unit = tr {
 }
 
 /**
- * Creates the html form for the page
- */
-fun createHTML(entries: Iterator<OptionEntry>, elementId: String? = null, classes: String? = null): HTMLElement {
+ * Creates the html form for the page */
+fun createHTML(entries: Iterator<OptionEntry>, classes: String? = null): HTMLElement {
     val form = document.create.form(method = FormMethod.post, classes = classes) {
-        elementId?.let { id = elementId }
         table {
             tbody {
                 entries.forEach { optionEntry(it) }
@@ -156,8 +177,7 @@ fun createHTML(entries: Iterator<OptionEntry>, elementId: String? = null, classe
 }
 
 /**
- * All entries
- */
+ * All entries for the form */
 val entries =
     arrayOf(
         OptionInputEntry(
@@ -228,65 +248,75 @@ fun generateDownloadAnchor(filename: String, blob: Blob): HTMLAnchorElement {
 }
 
 /**
- * Main method called when the page loads.
- */
+ * Main method called when the page loads. */
 fun init() {
     val reQuickStartFormID = document.findMetaContent("X-re-quickstart-form-id") ?: "re-quickstart-form"
 
     val pluginVersion = document.findMetaContent("X-re-quickstart-plugin-version") ?: "1.0.0"
+
+    // we create the REMgr (which asynchronously loads the necessary resources, like images and the zip file)
     val reMgrPromise = REMgr.load(pluginVersion)
 
-    document.getElementById(reQuickStartFormID)
-        ?.replaceWith(
-            createHTML(
-                entries.iterator(),
-                elementId = reQuickStartFormID,
-                classes = document.findMetaContent("X-re-quickstart-form-class")
-            )
+    // we generate the form
+    document.replaceElement(reQuickStartFormID,
+        createHTML(
+            entries.iterator(),
+            classes = document.findMetaContent("X-re-quickstart-form-class")
         )
+    )
 
-    val elements = entries.filterIsInstance<OptionInputEntry>().associateBy({ it.name }) { entry ->
+    // map of name -> HTMLInputElement from the form
+    val inputElements = entries.filterIsInstance<OptionInputEntry>().associateBy({ it.name }) { entry ->
         document.getElementById(entry.name) as? HTMLInputElement
     }
 
+    // map of name -> HTMLSelectElement from the form
     val selectElements = entries.filterIsInstance<OptionSelectEntry>().associateBy({ it.name }) { entry ->
         document.getElementById(entry.name) as? HTMLSelectElement
     }
 
+    // sets the state of the submit button depending on whether all values have been filled out
     fun maybeEnableSubmit() {
-        elements["submit"]?.disabled = elements.values.any { it?.value?.isEmpty() ?: false }
+        inputElements["submit"]?.disabled = inputElements.values.any { it?.value?.isEmpty() ?: false }
     }
 
+    // create the notification area where messages will be displayed to the user (console style)
     val notification = Notification("notification")
 
+    // print welcome message
     notification.info("### Rack Extension Plugin Generator Console [v$pluginVersion] ###")
-
     document.findMetaContent("X-re-quickstart-notification-welcome-message")?.let { message ->
         message.split('|').forEach { notification.info(it) }
     }
 
-    elements["submit"]?.addListener("click") {
+    // handles "Generate Blank Plugin" event
+    inputElements["submit"]?.addListener("click") {
 
         reMgrPromise.then { reMgr ->
 
+            // create the Rack Extension from the data in the form
             val re = reMgr.createRE(form!!)
 
+            // function which generates the panel GUI preview and links (Step. 2)
             fun renderPreview(re: RackExtension, panel: Panel) {
+                // the image itself
                 document.replaceElement("re-preview-gui-content", reMgr.generatePreview(re, panel))
 
+                // the links Front | Back | Folded Front | Folded Back (the current panel is not a link)
                 document.replaceElement("re-preview-gui-links",
                     document.create.ul {
                         re.availablePanels.forEach { p ->
+                            val panelName = p.toString().replace("_", " ").capitalize()
                             li(if(p == panel) "active" else null) {
                                 if(p != panel) {
                                     a {
                                         onClickFunction = {
                                             renderPreview(re, p)
                                         }
-                                        +p.toString().capitalize()
+                                        +panelName
                                     }
                                 } else {
-                                    +p.toString().capitalize()
+                                    +panelName
                                 }
                             }
                         }
@@ -329,44 +359,43 @@ fun init() {
                 )
             }
 
-            // we preview info
+            // we preview info.lua
             renderFilePreview("info.lua")
 
             // we reveal the rest of the page
             document.show("re-blank-plugin")
 
-            // generate zip file
-            reMgr.generateZip("${re.info.productId}-plugin", tree).then { (name, blob) ->
-                notification.info("Generated $name. Go to step 4 to download it.")
-                val downloadAnchor = generateDownloadAnchor(name, blob)
-                downloadAnchor.text = name
+            // generate zip file and provide a link to download it (no automatic download)
+            reMgr.generateZip("${re.info.productId}-plugin", tree).then { zip ->
+                notification.info("Generated ${zip.filename}. Go to step 4 to download it.")
+                val downloadAnchor = generateDownloadAnchor(zip.filename, zip.content)
+                downloadAnchor.text = zip.filename
                 document.replaceElement("re-download-link", downloadAnchor)
             }
         }
     }
 
-    elements["long_name"]?.onChange {
-        elements["medium_name"]?.setComputedValue(value.substring(0..19))
-        elements["short_name"]?.setComputedValue(value.substring(0..9))
+    // infer a medium and short name when long name is provided
+    inputElements["long_name"]?.onChange {
+        inputElements["medium_name"]?.setComputedValue(value.substring(0..19))
+        inputElements["short_name"]?.setComputedValue(value.substring(0..9))
     }
 
-    elements["manufacturer"]?.onChange {
-        elements["short_name"]?.value?.let { shortName ->
+    // infer a product_id when manufacturer and short_name have been provided
+    inputElements["manufacturer"]?.onChange {
+        inputElements["short_name"]?.value?.let { shortName ->
             if (shortName.isNotEmpty()) {
+                // applying RE SDK rule
                 val regex = Regex("[^A-Za-z0-9._]")
-                elements["product_id"]?.setComputedValue(
-                    "com.${regex.replace(value, "").toLowerCase()}.${
-                        regex.replace(
-                            shortName,
-                            ""
-                        )
-                    }"
+                inputElements["product_id"]?.setComputedValue(
+                    "com.${regex.replace(value, "").toLowerCase()}.${regex.replace(shortName, "")}"
                 )
             }
         }
     }
 
-    elements.forEach { (name, elt) ->
+    // hide Step.2+ if the form is changed
+    inputElements.forEach { (name, elt) ->
         if (name != "submit")
             elt?.onChange {
                 document.hide("re-blank-plugin")
@@ -374,6 +403,7 @@ fun init() {
             }
     }
 
+    // hide Step.2+ if the form is changed
     selectElements.forEach { (_, elt) ->
         elt?.addEventListener("change", {
             document.hide("re-blank-plugin")
@@ -381,6 +411,7 @@ fun init() {
     }
 }
 
+// Entry point for javascript
 fun main() {
     window.onload = { init() }
 }

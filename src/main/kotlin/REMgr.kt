@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2020 pongasoft
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ * @author Yan Pujante
+ */
+
 import kotlinx.browser.document
 import kotlinx.dom.addClass
 import kotlinx.html.dom.create
@@ -6,20 +24,44 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLImageElement
 import org.w3c.files.Blob
+import kotlin.js.Date
 import kotlin.js.Promise
 
+/**
+ * A file entry for the tree:
+ *
+ * @param html a function that knows how to render the file as an html element (ex: an image or text) and is only
+ *             invoked if the user request to preview the file by clicking on its name
+ * @param zip a promise to the content for the zip file (`String` or `Blob`). It is a promise because the background
+ *            images uses the [HTMLCanvasElement.toNamedBlob()] which return a promise
+ * @param resource for all "static" entries coming from `plugin.zip` and stored in the storage (gives access to date
+ *                 and unix permission) */
 class FileTreeEntry(val html: () -> HTMLElement, val zip: Promise<Any>, val resource: StorageResource? = null)
 
+/**
+ * A file tree is a map indexed by the full path to the file (ex: `GUI2D/device_2D.lua`) */
 typealias FileTree = Map<String, FileTreeEntry>
 
+/**
+ * The zip file that gets generated with the content of the rack extension */
+class REZip(val filename: String, val content: Blob)
+
+/**
+ * The manager for rack extensions. In charge of creating them (based on the form) via [createRE] and managing the
+ * file tree and zip file */
 class REMgr(private val storage: Storage) {
 
     companion object {
+        /**
+         * Main API to create [REMgr]. Loads the `plugin-<version>.zip` file hence it returns a promise.*/
         fun load(version: String): Promise<REMgr> {
             return Storage.load(version).then { REMgr(it) }
         }
     }
 
+    /**
+     * Creates a properly defined Rack Extension based on the user input. Adds the necessary device name, placeholder,
+     * sockets and routing required */
     fun createRE(form: HTMLFormElement): RackExtension {
 
         val re = RackExtension.fromForm(form)
@@ -111,7 +153,6 @@ class REMgr(private val storage: Storage) {
             }
         }
 
-
         return re
     }
 
@@ -133,29 +174,27 @@ class REMgr(private val storage: Storage) {
         val img = storage.getPlaceholderImageResource()
         val prop = REPlaceholderProperty(
             "Placeholder",
-            re.getWidth() - img.image.width - GUI2D.emptyMargin,
-            re.getHeight(Panel.back) - img.image.height - GUI2D.emptyMargin,
+            re.getWidth() - img.image.width - PanelGUI.emptyMargin,
+            re.getHeight(Panel.back) - img.image.height - PanelGUI.emptyMargin,
             img
         )
         re.addREProperty(prop)
     }
 
     /**
-     * Generates the preview */
+     * Generates the panel preview which consists of the panel background and all properties rendered
+     * (like audio sockets, display name, etc...). Returns an `<img>` element ready to be added to the DOM */
     fun generatePreview(re: RackExtension, panel: Panel) = with(document.createElement("img")) {
         this as HTMLImageElement
-        src = re.generateFullPanel(panel).toDataURL(type = "image/png")
+        src = re.generatePanelPreviewCanvas(panel).toDataURL(type = "image/png")
         document.findMetaContent("X-re-quickstart-re-preview-classes")?.let {
             it.split("|").forEach { c -> addClass(c) }
         }
         this
     }
 
-    private fun generateResourceContent(re: RackExtension, resource: StorageResource) = when (resource) {
-        is FileResource -> document.create.pre { +re.processContent(resource.content) }
-        is ImageResource -> generateStaticImgContent(resource)
-    }
-
+    /**
+     * Generates the `<img>` element for the static image resource */
     private fun generateStaticImgContent(imageResource: ImageResource) = with(document.createElement("img")) {
         this as HTMLImageElement
         src = imageResource.image.src
@@ -163,14 +202,29 @@ class REMgr(private val storage: Storage) {
         this
     }
 
+    /**
+     * Generates the `<img>` element for the dynamic image resource (background panel) */
     private fun generatePanelImgContent(re: RackExtension, panel: Panel) = with(document.createElement("img")) {
         this as HTMLImageElement
-        src = re.generatePanel(panel).toDataURL("image/png")
+        src = re.generatePanelCanvas(panel).toDataURL("image/png")
         document.findMetaContent("X-re-quickstart-re-files-preview-classes")?.let { addClass(it) }
         this
     }
 
+    /**
+     * Generates the file tree for the rack extension. The file tree is generated by concatenating:
+     *
+     * - all (static) files included from `plugin-<version>.zip` and processing them through the content processor
+     *   (files under `skeletons/common` and `skeletons/<re type>`)
+     * - all relevant static images (like audio sockets if present, tape, etc...)
+     * - background panels for all available panels (2 or 4)
+     *
+     * @see FileTree
+     * @see FileTreeEntry
+     */
     fun generateFileTree(re: RackExtension): FileTree {
+
+        val contentProcessor = re.getContentProcessor()
 
         // we look for (static) files under skeletons/<plugin_type> and skeletons/common
         // files under skeletons/<plugin_type> overrides file under skeletons/common
@@ -187,25 +241,32 @@ class REMgr(private val storage: Storage) {
                     Pair(path,
                         FileTreeEntry(
                             resource = resource,
-                            html = { generateResourceContent(re, resource) },
+                            html = {
+                                when (resource) {
+                                    is FileResource -> document.create.pre { +contentProcessor.processContent(resource.content) }
+                                    is ImageResource -> generateStaticImgContent(resource)
+                                }
+                            },
                             zip = when(resource) {
-                                is FileResource -> Promise.resolve(re.processContent(resource.content))
+                                is FileResource -> Promise.resolve(contentProcessor.processContent(resource.content))
                                 is ImageResource -> Promise.resolve(resource.blob)
                             }
                         )
                     )
                 }
 
+        // helper for dynamic image (background panel)
         fun genDynamicImagePair(panel: Panel): Pair<String, FileTreeEntry> {
             val name = "GUI2D/${re.getPanelImageKey(panel)}.png"
             return Pair(name,
                 FileTreeEntry(
                     html = { generatePanelImgContent(re, panel) },
-                    zip = re.generatePanel(panel).toNamedBlob(name).then { it.second }
+                    zip = re.generatePanelCanvas(panel).toNamedBlob(name).then { it.second }
                 )
             )
         }
 
+        // helper for static images (ex: audio socket...)
         fun genStaticImagePair(imageResource: ImageResource): Pair<String, FileTreeEntry> {
             val name = "GUI2D/${imageResource.key}.png"
             return Pair(name,
@@ -225,20 +286,23 @@ class REMgr(private val storage: Storage) {
     }
 
     /**
-     * Generates the (promise) of the zip file
-     * @return a (promise of a) pair where the first element is the name of the zip file and the second is the content */
-    fun generateZip(root: String, tree: FileTree): Promise<Pair<String, Blob>> {
+     * Generates the (promise) of the zip file */
+    fun generateZip(root: String, tree: FileTree): Promise<REZip> {
         val zip = JSZip()
         val rootDir = zip.folder(root)
 
+        // helper class to pass down the `then` chain
         class ZipEntry(val name: String, val resource: StorageResource?, val content: Any)
 
         return Promise.all(tree.map { (name, entry) ->
             entry.zip.then { ZipEntry(name, entry.resource, it) }
         }.toTypedArray()).then { array ->
+            // addresses issue https://github.com/Stuk/jszip/issues/369# with date being UTC
+            val now = Date().let { Date(it.getTime() - it.getTimezoneOffset() * 60000) }
+
             array.forEach { entry ->
                 val fileOptions = object : JSZipFileOptions {}.apply {
-                  date = entry.resource?.date
+                  date = entry.resource?.date ?: now
                   unixPermissions = entry.resource?.unixPermissions
                 }
                 rootDir.file(entry.name, entry.content, fileOptions)
@@ -253,7 +317,7 @@ class REMgr(private val storage: Storage) {
             zip.generateAsync(options)
         }.then {
             // return as a pair
-            Pair("$root.zip", it as Blob)
+            REZip("$root.zip", it as Blob)
         }
     }
 

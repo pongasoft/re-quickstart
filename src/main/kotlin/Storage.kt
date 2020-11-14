@@ -1,11 +1,29 @@
+/*
+ * Copyright (c) 2020 pongasoft
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ * @author Yan Pujante
+ */
+
 import org.w3c.dom.Image
 import org.w3c.files.Blob
 import kotlin.js.Date
 import kotlin.js.Promise
 
 /**
- * Maintains the information for each file in the zip archive. Will use permission and date to generate the
- * outcome archive. */
+ * Maintains the information for each file in the zip archive. Will use permission and date to carry it over to the
+ * generated zip file. */
 sealed class StorageResource(val path: String, val date: Date?, val unixPermissions: Int?)
 
 /**
@@ -21,6 +39,8 @@ class ImageResource(path: String, date: Date?, unixPermissions: Int?, val blob: 
     val key : String  get() = path.split("/").last().removeSuffix(".png")
 }
 
+/**
+ * The image provider is in charge of providing static / stock images */
 interface ImageProvider {
 
     companion object {
@@ -29,6 +49,8 @@ interface ImageProvider {
         protected const val TAPE_HORIZONTAL_IMAGE = "images/BuiltIn/Tape_Horizontal_1frames.png"
     }
 
+    /**
+     * @return the resource given its path or `null` if it doesn't exist */
     fun findImageResourceByPath(path: String): ImageResource?
 
     fun getAudioSocketImageResource() = findImageResourceByPath(AUDIO_SOCKET_IMAGE)!!
@@ -36,12 +58,22 @@ interface ImageProvider {
     fun getTapeHorizontalImageResource() = findImageResourceByPath(TAPE_HORIZONTAL_IMAGE)!!
 }
 
+/**
+ * Storage is in charge of keeping all the resources (text files and images) loaded from `plugin-<version>.zip` */
 class Storage(val resources: Array<out StorageResource>) : ImageProvider {
 
+    // findImageResourceByPath
     override fun findImageResourceByPath(path: String): ImageResource? =
         resources.find { it.path == path } as? ImageResource
 
     companion object {
+        /**
+         * Main API to create a storage. Loads the file `plugin-<version>.zip` asynchronously:
+         *
+         * - fetches the zip file
+         * - read each entry in the zip file
+         * - convert it into an `ImageResource` if necessary (thus converting the blob into an `Image`)
+         */
         fun load(version: String): Promise<Storage> =
             fetchBlob("plugin-$version.zip").then { zipBlob ->
                 val zip = JSZip()
@@ -59,6 +91,7 @@ class Storage(val resources: Array<out StorageResource>) : ImageProvider {
                                 }.flatten()
                             )
                         } else {
+                            // handle text files
                             if (!(path.startsWith("__MACOSX") ||
                                         path.startsWith(".idea") ||
                                         path.endsWith(".DS_Store"))

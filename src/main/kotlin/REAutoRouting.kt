@@ -1,9 +1,31 @@
+/*
+ * Copyright (c) 2020 pongasoft
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ * @author Yan Pujante
+ */
+
+/**
+ * Defines the interface used for auto routing (specified in `motherboard_def.lua`) */
 interface IREAutoRouting {
     /**
      * @return the routing section for `motherboard_def.lua` file */
     fun motherboard(): String
 }
 
+/**
+ * Implementation for `jbox.add_stereo_audio_routing_pair` */
 class StereoAudioRoutingPair(val socket: AudioStereoPair) : IREAutoRouting {
     /**
      * @return the routing section for `motherboard_def.lua` file */
@@ -13,6 +35,8 @@ class StereoAudioRoutingPair(val socket: AudioStereoPair) : IREAutoRouting {
 }"""
 }
 
+/**
+ * Implementation for `jbox.add_stereo_effect_routing_hint` */
 class StereoEffectRoutingHint(
     val input: AudioStereoPair,
     val output: AudioStereoPair,
@@ -32,6 +56,8 @@ class StereoEffectRoutingHint(
 }"""
 }
 
+/**
+ * Implementation for `jbox.set_effect_auto_bypass_routing` */
 class EffectAutoBypassRouting(
     val input: AudioStereoPair,
     val output: AudioStereoPair
@@ -51,6 +77,8 @@ class EffectAutoBypassRouting(
 }"""
 }
 
+/**
+ * Implementation for `jbox.add_stereo_instrument_routing_hint` */
 class StereoInstrumentRoutingHint(val output: AudioStereoPair) : IREAutoRouting {
     /**
      * @return the routing section for `motherboard_def.lua` file */
@@ -60,6 +88,8 @@ class StereoInstrumentRoutingHint(val output: AudioStereoPair) : IREAutoRouting 
 }"""
 }
 
+/**
+ * Implementation for `jbox.add_stereo_audio_routing_target` */
 class StereoAudioRoutingTarget(val socket: AudioStereoPair, val signalType: SignalType = SignalType.normal, val autoRouteEnable: Boolean = true) : IREAutoRouting {
     enum class SignalType { send, `return`, normal }
     /**
