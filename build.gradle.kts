@@ -4,7 +4,7 @@ plugins {
     kotlin("js") version "1.4.10"
 }
 group = "org.pongasoft"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -21,9 +21,11 @@ kotlin {
         browser {
             binaries.executable()
             webpackTask {
+                outputFileName = "re-quickstart-${project.version}.js"
                 cssSupport.enabled = true
             }
             runTask {
+                outputFileName = "re-quickstart-${project.version}.js"
                 cssSupport.enabled = true
             }
         }
