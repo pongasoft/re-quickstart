@@ -219,6 +219,14 @@ class RackExtension(val info: Info) {
             )
         }
 
+        // README.md
+        setToken("reason-browser-section", when(info.type) {
+            Type.instrument -> "Instruments"
+            Type.creative_fx, Type.studio_fx -> "Effects"
+            Type.helper -> "Utilities"
+            Type.note_player -> "Players"
+        })
+
         val t = newTokens.mapKeys { (k,_) -> "[-$k-]" }
 
         return t

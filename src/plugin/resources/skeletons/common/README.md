@@ -20,7 +20,7 @@ Ultra Quick Starting Guide
 * Unpack/Unzip the SDK in a location of your choice (`<path to location of your choice>`) and make sure `RE2DRender` is unzipped as well and is a sibling of `SDK`
 * Now run `./configure.py -p <path to location of your choice>/SDK` (resp. `python ./configure.py -p <path to location of your choice>SDK` for Win10)
 * Now go into the `build` folder created by the `configure` script and run `./re.sh install` (resp. `./re.bat install` for Win10)
-* Open Recon and you can now load the `[-info-long_name-]` rack extension from the `[-info-device_type-]` section under the `[-info-manufacturer-]` vendor.
+* Open Recon and you can now load the `[-info-long_name-]` rack extension from the `[-reason-browser-section-]` section under the `[-info-manufacturer-]` vendor.
 
 Starting Guide
 --------------
@@ -207,7 +207,7 @@ Select the `native-install` target/configuration and build it (Ctrl-F9 with CLio
 
 ### Step 3 - Try the plugin
 
-You can then open Recon and load the `[-info-long_name-]` rack extension. You will find the plugin in the `[-info-device_type-]` section under the `[-info-manufacturer-]` vendor.
+You can then open Recon and load the `[-info-long_name-]` rack extension. You will find the plugin in the `[-reason-browser-section-]` section under the `[-info-manufacturer-]` vendor.
 
 > #### Note
 > The plugin will **not** be accessible from Reason. You must use Recon. 
