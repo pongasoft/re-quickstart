@@ -372,7 +372,11 @@ fun init() {
                 downloadAnchor.text = zip.filename
                 document.replaceElement("re-download-link", downloadAnchor)
             }
+        }.catch {
+            println(it)
+            notification.error("Error detected - ${it.message}. Try refreshing the page...")
         }
+
     }
 
     // infer a medium and short name when long name is provided
