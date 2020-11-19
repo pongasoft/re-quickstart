@@ -22,6 +22,7 @@ import kotlinx.dom.createElement
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
+import org.pongasoft.re_quickstart.BuildConfig
 import org.w3c.dom.*
 import org.w3c.dom.url.URL
 import org.w3c.files.Blob
@@ -252,7 +253,7 @@ fun generateDownloadAnchor(filename: String, blob: Blob): HTMLAnchorElement {
 fun init() {
     val reQuickStartFormID = document.findMetaContent("X-re-quickstart-form-id") ?: "re-quickstart-form"
 
-    val pluginVersion = document.findMetaContent("X-re-quickstart-plugin-version") ?: "1.0.0"
+    val pluginVersion = BuildConfig.VERSION
 
     // we create the REMgr (which asynchronously loads the necessary resources, like images and the zip file)
     val reMgrPromise = REMgr.load(pluginVersion)

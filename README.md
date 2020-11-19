@@ -38,6 +38,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2020-11-19 - 1.0.2
+* Use actual Reason Browser section name instead of enum name
+* Use version from build file
+
 #### 2020-11-14 - 1.0.1
 * Fixed wrong date in zip file
 * Open source release

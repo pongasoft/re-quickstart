@@ -2,9 +2,11 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
     kotlin("js") version "1.4.10"
+    id("com.github.gmazzo.buildconfig") version "2.0.2"
 }
+
 group = "org.pongasoft"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
@@ -16,6 +18,12 @@ repositories {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.2")
 }
+
+buildConfig {
+    buildConfigField("String", "VERSION", "\"${project.version}\"")
+    useKotlinOutput()
+}
+
 kotlin {
     js(IR) {
         browser {
@@ -42,10 +50,15 @@ val zipTask = tasks.create<Zip>("zip") {
     destinationDirectory.set(File(buildDir, "assets"))
 }
 
+val generateBuildConfig : com.github.gmazzo.gradle.plugins.BuildConfigTask by tasks
+
 // Adds the assets folder to the list of sources so that the zip file can be loaded in dev mode
 kotlin.sourceSets.named("main") {
+    kotlin.srcDir(generateBuildConfig.outputDir)
     resources.srcDir(zipTask.destinationDirectory)
 }
+
+tasks.findByName("compileKotlinJs")?.dependsOn(generateBuildConfig)
 
 // make sure the zip file is always built
 tasks.findByName("processResources")?.dependsOn(zipTask)

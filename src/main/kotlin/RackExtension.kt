@@ -16,6 +16,7 @@
  * @author Yan Pujante
  */
 
+import org.pongasoft.re_quickstart.BuildConfig
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLFormElement
@@ -220,6 +221,7 @@ class RackExtension(val info: Info) {
         }
 
         // README.md
+        setToken("re-quickstart-version", BuildConfig.VERSION)
         setToken("reason-browser-section", when(info.type) {
             Type.instrument -> "Instruments"
             Type.creative_fx, Type.studio_fx -> "Effects"
