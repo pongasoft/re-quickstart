@@ -11,6 +11,7 @@ Requirements
 * This project currently expects RE SDK 4.2.0 or 4.1.0 to be installed on the machine (it will not download it for you)
 * Due to the RE SDK requirements, this project also requires python 3 to be installed
 * It has been tested on macOS 10.14.6 with Xcode 9 installed
+* It has been tested on macOS 11.1 with Xcode 12.3 installed and Apple Silicon (forces `x86_64` build to compile and run)
 * It has been tested on Windows 10 with Visual Studio 16 2019 build tools
 
 Ultra Quick Starting Guide

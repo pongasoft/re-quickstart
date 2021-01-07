@@ -38,6 +38,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-01-07 - 1.0.3
+* Fetch `re-cmake` first (via `fetch-re-cmake.cmake`) in order to apply options before `project`
+* Use `re-cmake` 1.2.0 to support building on new Apple chipset
+
 #### 2020-11-19 - 1.0.2
 * Use actual Reason Browser section name instead of enum name
 * Use version from build file
