@@ -38,6 +38,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-01-14 - 1.0.4
+* Added `.gitignore` to exclude common files and folders
+* Use 2.0 as the format for `motherboard_def.lua`
+
 #### 2021-01-07 - 1.0.3
 * Fetch `re-cmake` first (via `fetch-re-cmake.cmake`) in order to apply options before `project`
 * Use `re-cmake` 1.2.0 to support building on new Apple chipset
