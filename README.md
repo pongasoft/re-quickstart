@@ -38,6 +38,9 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-01-25 - 1.0.5
+* Updated the README file to emphasize the fact that `cmake` must be available on the command line
+
 #### 2021-01-14 - 1.0.4
 * Added `.gitignore` to exclude common files and folders
 * Use 2.0 as the format for `motherboard_def.lua`

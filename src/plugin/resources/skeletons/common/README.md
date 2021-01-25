@@ -7,7 +7,7 @@ Please follow the instructions below on how to build and deploy it: the "Ultra Q
 Requirements
 ------------
 
-* This project requires CMake (minimum version 3.13)
+* This project requires CMake (minimum version 3.13) to be properly installed (`cmake` executable must be in your `PATH`)
 * This project currently expects RE SDK 4.2.0 or 4.1.0 to be installed on the machine (it will not download it for you)
 * Due to the RE SDK requirements, this project also requires python 3 to be installed
 * It has been tested on macOS 10.14.6 with Xcode 9 installed
@@ -62,6 +62,8 @@ Invoking the `configure.py` **creates** a `build` directory in the directory whe
 Running the `python3 configure.py -h` command will print the usage.
 
 Note that depending on how `python` is installed on your system you may have to invoke it differently.
+
+Note that this script is expecting the `cmake` command line tool to be in the `PATH` (use `cmake -version` to confirm it is properly installed).
 
 ```
 # python3 ./configure.py -h
@@ -155,6 +157,8 @@ To create a Visual Studio project simply use the command line first and invoke `
 #### Command line - `re.sh install`
 
 After running the `configure` script, simply go into the newly generated `build` folder and run `re.sh` (resp. `re.bat`)
+
+Note that this script is expecting the `cmake` command line tool to be in the `PATH` (use `cmake -version` to confirm it is properly installed).
 
 ```
 # cd build
