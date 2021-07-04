@@ -181,7 +181,8 @@ Commands
   ---- Native build commands ----
   build       : build the RE (.dylib)
   install     : build (code/gui) and install the RE for use in Recon
-
+  test        : run the unit tests
+  
   ---- Jbox build commands (build45 / sandbox toolchain) ----
   local45     : build (code/gui) and install the RE for use in Recon ('Deployment' type or -d/-t to change)
   universal45 : build the package for uploading to Reason Studio servers (.u45)
@@ -216,7 +217,17 @@ You can then open Recon and load the `[-info-long_name-]` rack extension. You wi
 
 > #### Note
 > The plugin will **not** be accessible from Reason. You must use Recon. 
- 
+
+### Step 4 - Run the unit tests
+
+#### Command line - `re.sh test`
+
+Issuing this command will compile and run the unit tests. This project provides a single basic test to demonstrate how to add new ones.
+
+#### IDEs
+
+Some IDEs (like CLion) are aware of unit testing natively (with Google Test) and offer the ability to run a specific test directly within the IDE. Otherwise, the target `native-run-test` will execute all of them.
+
 ### Next Steps
 
 - Check the [SDK documentation](https://developer.reasonstudios.com/documentation/rack-extension-sdk/4.2.0/jukebox-readme) for information on how to build a Rack Extension.

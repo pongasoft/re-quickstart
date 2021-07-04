@@ -307,7 +307,8 @@ fun init() {
                 document.replaceElement("re-preview-gui-links",
                     document.create.ul {
                         re.availablePanels.forEach { p ->
-                            val panelName = p.toString().replace("_", " ").capitalize()
+                            val panelName =
+                                p.toString().replace("_", " ").replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
                             li(if(p == panel) "active" else null) {
                                 if(p != panel) {
                                     a {
@@ -340,7 +341,7 @@ fun init() {
                 document.replaceElement("re-preview-files-links",
                     document.create.div {
                         ul {
-                            tree.keys.sortedBy { it.toLowerCase() }.forEach { p ->
+                            tree.keys.sortedBy { it.lowercase() }.forEach { p ->
                                 li(if(path == p) "active" else null) {
                                     if(p != path) {
                                         a {
@@ -393,7 +394,7 @@ fun init() {
                 // applying RE SDK rule
                 val regex = Regex("[^A-Za-z0-9._]")
                 inputElements["product_id"]?.setComputedValue(
-                    "com.${regex.replace(value, "").toLowerCase()}.${regex.replace(shortName, "")}"
+                    "com.${regex.replace(value, "").lowercase()}.${regex.replace(shortName, "")}"
                 )
             }
         }

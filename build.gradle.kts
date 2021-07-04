@@ -1,22 +1,20 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("js") version "1.4.20"
+    kotlin("js") version "1.5.20"
     id("com.github.gmazzo.buildconfig") version "2.0.2"
 }
 
 group = "org.pongasoft"
-version = "1.0.5"
+version = "1.0.6"
 
 repositories {
     mavenCentral()
     jcenter()
-    maven {
-        url = uri("https://dl.bintray.com/kotlin/kotlinx")
-    }
+    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") }
 }
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-html:0.7.2")
 }
 
 buildConfig {

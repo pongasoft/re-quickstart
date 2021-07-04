@@ -38,6 +38,9 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-07-04 - 1.0.6
+* Use `re-cmake` 1.3.0 and added unit test to demonstrate new capability
+
 #### 2021-01-25 - 1.0.5
 * Updated the README file to emphasize the fact that `cmake` must be available on the command line
 
