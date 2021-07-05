@@ -69,7 +69,7 @@ add_re_plugin(
     BUILD_SOURCES        "${re_sources_cpp}"      # compiled for both local and jbox builds
     NATIVE_BUILD_SOURCES "${logging_sources}"     # compiled only for local builds
     RENDER_2D_SOURCES    "${re_sources_2d}"
-    INCLUDE_DIRECTORIES  "${LOGGING_CPP_SRC_DIR}" # plugin uses logutu
+    INCLUDE_DIRECTORIES  "${LOGGING_CPP_SRC_DIR}" # plugin uses loguru
     COMPILE_OPTIONS      -Wall
     ENABLE_DEBUG_LOGGING                          # turn on JBOX_TRACE and loguru
 # Testing
