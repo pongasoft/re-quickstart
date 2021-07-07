@@ -38,6 +38,9 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-07-07 - 1.1.2
+* Use re-cmake 1.3.2 (fixes issues with tests)
+
 #### 2021-07-05 - 1.1.0
 * Use static library (missing symbols when using dynamic one) 
 
