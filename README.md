@@ -38,6 +38,9 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-07-11 - 1.1.3
+* Use re-cmake 1.3.3 (testing improvement)
+
 #### 2021-07-07 - 1.1.2
 * Use re-cmake 1.3.2 (fixes issues with tests)
 

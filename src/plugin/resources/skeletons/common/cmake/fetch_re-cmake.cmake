@@ -10,7 +10,7 @@ else()
 endif()
 
 set(RE_CMAKE_GIT_REPO "https://github.com/pongasoft/re-cmake" CACHE STRING "re-cmake git repository url")
-set(RE_CMAKE_GIT_TAG "v1.3.2" CACHE STRING "re-cmake git tag")
+set(RE_CMAKE_GIT_TAG "v1.3.3" CACHE STRING "re-cmake git tag")
 
 FetchContent_Declare(re-cmake
       GIT_REPOSITORY    ${RE_CMAKE_GIT_REPO}
