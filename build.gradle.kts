@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("js") version "1.5.20"
+    kotlin("js") version "1.5.30"
     id("com.github.gmazzo.buildconfig") version "2.0.2"
 }
 
