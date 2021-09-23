@@ -19,6 +19,6 @@ supports_patches = false
 accepts_notes = [-info-accepts_notes-]
 auto_create_track = [-info-auto_create_track-]
 auto_create_note_lane = [-info-auto_create_note_lane-]
-supports_performance_automation = false
+supports_performance_automation = [-info-accepts_notes-]
 device_height_ru = [-info-device_height_ru-]
 automation_highlight_color = {r = 60, g = 255, b = 2}
