@@ -38,6 +38,9 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-09-27 - 1.1.5
+* Fixed loguru universal45 build
+
 #### 2021-09-23 - 1.1.4
 * Fixed instrument plugin
 
