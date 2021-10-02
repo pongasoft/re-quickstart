@@ -38,6 +38,12 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-10-02 - 1.1.7
+* Uses re-cmake 1.3.5
+
+#### 2021-09-27 - 1.1.6
+* Uses re-cmake 1.3.4
+
 #### 2021-09-27 - 1.1.5
 * Fixed loguru universal45 build
 
