@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
-# Using RE SDK version 4.2.0
-set(RE_SDK_VERSION 4.2.0)
+# Using RE SDK version 4.3.0
+set(RE_SDK_VERSION 4.3.0)
 
 set(RE_CMAKE_ROOT_DIR "")
 #set(RE_CMAKE_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../pongasoft/re-cmake")
