@@ -38,6 +38,12 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2021-10-28 - 1.1.9
+* Uses re-cmake 1.3.7
+
+#### 2021-10-26 - 1.1.8
+* Uses re-cmake 1.3.6 / RE SDK 4.3.0 / Hi Res
+
 #### 2021-10-02 - 1.1.7
 * Uses re-cmake 1.3.5
 
