@@ -16,6 +16,7 @@ manufacturer = "[-info-manufacturer-]"
 version_number = "[-info-version_number-]"
 device_type = "[-info-device_type-]"
 supports_patches = false
+-- default_patch = "/Public/default.repatch"
 accepts_notes = [-info-accepts_notes-]
 auto_create_track = [-info-auto_create_track-]
 auto_create_note_lane = [-info-auto_create_note_lane-]
