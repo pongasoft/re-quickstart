@@ -247,11 +247,6 @@ You do not have to use it in your own project and can use `JBOX_TRACE` and other
   - for 'local45 Deployment' (`./re.sh local45`) `JBOX_TRACE` is disabled
   - for 'universal45' (`./re.sh universal45`), it produces a zip file containing 2 builds, a `Testing` build for which `JBOX_TRACE` is enabled and a `Deployment` build for with `JBOX_TRACE` is disabled
 
-Misc
-----
-
-- This project uses [loguru](https://github.com/emilk/loguru) for logging (included under `logging`)
-
 Licensing
 ---------
 

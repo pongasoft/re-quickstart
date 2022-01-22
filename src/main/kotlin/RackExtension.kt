@@ -220,6 +220,15 @@ class RackExtension(val info: Info) {
             )
         }
 
+        // cpp
+        setToken("tester-device_type", when(info.type) {
+            Type.instrument -> "InstrumentTester"
+            Type.creative_fx -> "CreativeEffectTester"
+            Type.studio_fx -> "StudioEffectTester"
+            Type.helper -> "HelperTester"
+            Type.note_player -> "NotePlayerTester"
+        })
+
         // README.md
         setToken("re-quickstart-version", BuildConfig.VERSION)
         setToken("reason-browser-section", when(info.type) {

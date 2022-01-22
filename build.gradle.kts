@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.pongasoft"
-version = "1.1.11"
+version = "1.2.0"
 
 repositories {
     mavenCentral()

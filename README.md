@@ -38,6 +38,11 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 Release Notes
 =============
 
+#### 2022-01-22 - 1.2.0
+
+* Use re-cmake 1.4.0 (comes with loguru so not included anymore)
+* Use re-mock 1.0.0 for testing: instantiate and run the first batch (which is a very comprehensive test already)
+
 #### 2021-10-28 - 1.1.9
 * Uses re-cmake 1.3.7
 
