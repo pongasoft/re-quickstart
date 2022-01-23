@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.17)
 #################
 # re-cmake
 #################
-set(re-cmake_GIT_TAG "v1.4.0" CACHE STRING "re-cmake git tag")
+set(re-cmake_GIT_TAG "v1.4.1" CACHE STRING "re-cmake git tag")
 set(re-cmake_GIT_REPO "https://github.com/pongasoft/re-cmake" CACHE STRING "re-cmake git repository url")
 
 # Uncomment/set to proper value if local instead of remote

@@ -11,6 +11,9 @@ TEST(Device, Init)
 {
   DLOG_F(INFO, "Device - Init");
 
+  // make sure that loguru/DCHECK_F calls throw an exception rather than aborting during test
+  loguru::init_for_test();
+
   // load/parse info.lua, motherboard_def.lua and realtime_controller.lua
   auto c = DeviceConfig<Device>::fromJBoxExport(RE_CMAKE_PROJECT_DIR);
 
