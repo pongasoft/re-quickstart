@@ -37,6 +37,9 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2022-01-24 - 1.2.2
+
+* Use re-cmake 1.4.2 (use external re-logging)
 
 #### 2022-01-22 - 1.2.0
 
