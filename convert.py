@@ -140,7 +140,6 @@ plugin['cmake_project_name'] = maybe_ask_user(False, "Project Name", project_nam
 
 # 5. Determine if the device handles samples
 samples = list(re_project_dir.glob('Resources/**/*.wav')) + list(re_project_dir.glob('Resources/**/*.aiff'))
-print(samples)
 plugin['options_re_mock_support_for_audio_file'] = "ON" if len(samples) > 0 else "OFF"
 
 # 6. Confirm if device supports hi res
@@ -182,7 +181,8 @@ plugin['cmake_re_sources_2d'] = "\n".join(list(map(lambda x: f'    "${{RE_2D_SRC
 plugin['tester_device_type'] = tester_types[device_type]
 plugin['test_includes'] = "\n".join(list(map(lambda x: f'#include <{to_cmake_path(x)}>', re_sources_h)))
 
-plugin['test_class_name'] = maybe_ask_user(False, "Name of the main instance this plugin creates", plugin['cmake_project_name'])
+plugin['test_class_name'] = maybe_ask_user(False, "Name of the main instance this plugin creates",
+                                           f"C{plugin['cmake_project_name']}")
 
 # class Processor
 class Processor(Template):
