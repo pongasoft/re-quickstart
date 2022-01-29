@@ -175,11 +175,27 @@ class RackExtension(val info: Info) {
           newTokens.getOrPut(key, {value})
         }
 
+        // using SDK version 4.3.0
+        setToken("re_sdk_version", "4.3.0")
+
         // CMakeLists.txt
         setToken("cmake_project_name", info.productId.split(".").lastOrNull()?: "Blank")
 
+        setToken("cmake_re_cpp_src_dir", "\"\${CMAKE_CURRENT_LIST_DIR}/src/cpp\"")
+
+        setToken("cmake_re_sources_cpp",
+            arrayOf(
+                "\${RE_CPP_SRC_DIR}/Device.h",
+                "\${RE_CPP_SRC_DIR}/Device.cpp",
+                "\${RE_CPP_SRC_DIR}/JukeboxExports.cpp")
+                .joinToString(separator = "\n") { "    \"${it}\"" })
+
         val imageKeys = availablePanels.map { getPanelImageKey(it) } + getPropertyImages().map { it.key }
-        setToken("cmake-re_sources_2d", imageKeys.joinToString(separator = "\n") { "    \"\${RE_2D_SRC_DIR}/${it}.png\"" })
+        setToken("cmake_re_sources_2d", imageKeys.joinToString(separator = "\n") { "    \"\${RE_2D_SRC_DIR}/${it}.png\"" })
+
+        // options.cmake
+        setToken("options_re_mock_support_for_audio_file", "OFF")
+        setToken("options_extras", "")
 
         // info.lua
         setToken("info-long_name", info.longName)
@@ -221,7 +237,9 @@ class RackExtension(val info: Info) {
         }
 
         // cpp
-        setToken("tester-device_type", when(info.type) {
+        setToken("test_class_name", "Device")
+        setToken("test_includes", "#include <Device.h>")
+        setToken("tester_device_type", when(info.type) {
             Type.instrument -> "InstrumentTester"
             Type.creative_fx -> "CreativeEffectTester"
             Type.studio_fx -> "StudioEffectTester"

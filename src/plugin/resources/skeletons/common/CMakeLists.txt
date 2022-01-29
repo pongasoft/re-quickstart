@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.17)
 
-# Using RE SDK version 4.3.0
-set(RE_SDK_VERSION 4.3.0)
+# Using RE SDK version [-re_sdk_version-]
+set(RE_SDK_VERSION [-re_sdk_version-])
 
 include(cmake/options.cmake)  # (optional) override versions used
 include(cmake/re-cmake.cmake) # include re-cmake (BEFORE project() definition)
@@ -16,15 +16,13 @@ set(CMAKE_CXX_STANDARD 17)
 re_cmake_init(INCLUDES re-logging re-mock)
 
 # Defining where the sources of the plugin live
-set(RE_CPP_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src/cpp")
+set(RE_CPP_SRC_DIR [-cmake_re_cpp_src_dir-])
 
 # Defining all the source files for the project
 # Although you could use a file(GLOB ...) pattern, it is NOT recommended
 # as the CMake generation would happen on every single build!
 set(re_sources_cpp
-    ${RE_CPP_SRC_DIR}/Device.h
-    ${RE_CPP_SRC_DIR}/Device.cpp
-    ${RE_CPP_SRC_DIR}/JukeboxExports.cpp
+[-cmake_re_sources_cpp-]
     )
 
 # Defining where the local GUI2D files live
@@ -36,11 +34,11 @@ set(RE_2D_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/GUI2D")
 set(re_sources_2d
 
     # lua files describing the GUI
-    ${RE_2D_SRC_DIR}/device_2D.lua
-    ${RE_2D_SRC_DIR}/hdgui_2D.lua
+    "${RE_2D_SRC_DIR}/device_2D.lua"
+    "${RE_2D_SRC_DIR}/hdgui_2D.lua"
 
     # Images for the device
-[-cmake-re_sources_2d-]
+[-cmake_re_sources_2d-]
     )
 
 # Location of the test cases
