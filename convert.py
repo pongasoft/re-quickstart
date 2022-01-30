@@ -245,7 +245,7 @@ You can now run the following:
 > ./re.sh install         # to build/install the plugin
 > ./re.sh test -- -j 6    # to run the tests (-- -j 6 is to build in parallel)
 -------
-Check the https://github.com/pongasoft/re-quickstart/docs/convert.md [Next Steps] section''')
+Check the https://github.com/pongasoft/re-quickstart/blob/master/docs/convert.md [Next Steps] section''')
 else:
     print('''
 You can now run the following:
@@ -256,4 +256,4 @@ You can now run the following:
 > ./re.bat install         # to build/install the plugin
 > ./re.bat test            # to run the tests
 -------
-Check the https://github.com/pongasoft/re-quickstart/docs/convert.md [Next Steps] section''')
+Check the https://github.com/pongasoft/re-quickstart/blob/master/docs/convert.md [Next Steps] section''')
