@@ -161,6 +161,7 @@ re_sources_cpp = list(re_project_dir.glob('**/*.cpp'))
 re_sources_h = list(re_project_dir.glob('**/*.h'))
 re_sources_2d = list(re_GUI2D_dir.glob('*.png'))
 
+assert len(re_sources_2d) > 0, "This tool only supports 2D (3D GUI is deprecated)."
 
 def to_cmake_path(p):
     return "/".join(p.parts)
@@ -240,15 +241,19 @@ You can now run the following:
 -------
 > ./configure.py
 > cd build
+> ./re.sh uninstall       # to remove any prior installation of the plugin
 > ./re.sh install         # to build/install the plugin
 > ./re.sh test -- -j 6    # to run the tests (-- -j 6 is to build in parallel)
--------''')
+-------
+Check the https://github.com/pongasoft/re-quickstart/docs/convert.md [Next Steps] section''')
 else:
     print('''
 You can now run the following:
 -------
-> python3 ./configure.py
+> python ./configure.py
 > cd build
+> ./re.bat uninstall       # to remove any prior installation of the plugin
 > ./re.bat install         # to build/install the plugin
 > ./re.bat test            # to run the tests
--------''')
+-------
+Check the https://github.com/pongasoft/re-quickstart/docs/convert.md [Next Steps] section''')

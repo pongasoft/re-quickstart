@@ -3,6 +3,8 @@ Introduction
 
 This project is the code that drives the [Rack Extension - Quick Start](https://pongasoft.com/re-quickstart/index.html) dynamic section.
 
+This project also includes a conversion tool to convert an existing rack extension to one that uses `re-cmake` like the one you get after using Rack Extension - Quick Start. Check the [Rack Extension - Convert](./docs/convert.md) documentation.
+
 This project is built with kotlin 1.4.10 and demonstrate a few interesting features
 
 List of demonstrated features (kotlin)
@@ -37,6 +39,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2022-01-30 - 1.2.3
+
+* Added convert tool to convert an existing rack extension
+
 #### 2022-01-24 - 1.2.2
 
 * Use re-cmake 1.4.2 (use external re-logging)

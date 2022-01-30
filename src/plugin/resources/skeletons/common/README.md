@@ -8,7 +8,7 @@ Requirements
 ------------
 
 * This project requires CMake (minimum version 3.13) to be properly installed (`cmake` executable must be in your `PATH`)
-* This project currently expects RE SDK 4.2.0 or 4.1.0 to be installed on the machine (it will not download it for you)
+* This project currently expects RE SDK 4.3.0+ to be installed on the machine (it will not download it for you)
 * Due to the RE SDK requirements, this project also requires python 3 to be installed
 * It has been tested on macOS 10.14.6 with Xcode 9 installed
 * It has been tested on macOS 11.1 with Xcode 12.3 installed and Apple Silicon (forces `x86_64` build to compile and run)
@@ -17,7 +17,7 @@ Requirements
 Ultra Quick Starting Guide
 --------------------------
 
-* Download the [RE SDK 4.2.0](https://developer.reasonstudios.com/downloads/rack-extension-sdk)
+* Download the [RE SDK 4.3.0](https://developer.reasonstudios.com/downloads/rack-extension-sdk)
 * Unpack/Unzip the SDK in a location of your choice (`<path to location of your choice>`) and make sure `RE2DRender` is unzipped as well and is a sibling of `SDK`
 * Now run `./configure.py -p <path to location of your choice>/SDK` (resp. `python ./configure.py -p <path to location of your choice>SDK` for Win10)
 * Now go into the `build` folder created by the `configure` script and run `./re.sh install` (resp. `./re.bat install` for Win10)
@@ -68,45 +68,7 @@ Note that this script is expecting the `cmake` command line tool to be in the `P
 ```
 # python3 ./configure.py -h
 usage: configure.py [-h] [-n] [-f] [-R] [-p RE_SDK_ROOT] [-r RE_2D_RENDER_ROOT] [-G GENERATOR] [-- <cmake_options>]
-
-positional arguments:
-  cmake_options         Any options for cmake
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -n, --dry-run         Dry run (prints what it is going to do)
-  -f, --force           Force a regeneration (delete and recreate build folder)
-  -p RE_SDK_ROOT, --sdk-path RE_SDK_ROOT
-                        Path to the sdk (optional)
-  -r RE_2D_RENDER_ROOT, --render-path RE_2D_RENDER_ROOT
-                        Path to RE2DRender (optional)
-  -G GENERATOR, --generator GENERATOR
-                        CMake generator (optional)
-  -R, --release         Use CMake Release build type (for single-config generators)
-
-Notes
-  -p defaults to /Users/Shared/ReasonStudios/JukeboxSDK_<RE_SDK_VERSION>/SDK
-
-  -r defaults to <path_to_sdk>/../RE2DRender
-
-  -G defaults to "Unix Makefiles" on macOS and "Visual Studio 16 2019" / X64 for Windows10
-  run 'cmake --help' to get the list of generators supported
-
-  For single-config generators, Debug is used by default and can be changed with -R for Release
-  For multi-config generators, -R is ignored
-
-  To provide extra options to CMake you do it this way
-  python3 configure.py -- -Wdev
-
-Examples
-  # Specify an explicit path to the sdk and uses default generator
-  python3 configure.py -p /opt/local/JukeboxSDK_4.2.0/SDK
-
-  # Use default sdk path and uses Xcode generator
-  python3 configure.py -G Xcode
-
-  # Use defaults
-  python3 configure.py
+...
 ```
 > #### Note
 > The default generator for macOS is "Unix Makefiles" (not Xcode) because it works really well and creates very fast builds.
@@ -146,7 +108,7 @@ This section assumes that you have CMake Tools extension installed (a Microsoft 
    Click on the CMake Icon in the toolbar then click on ‘Configure’ icon at which point you will be prompted for a Kit. You should select “Visual Studio Build Tools 2019 - amd64”. This will configure CMake.
 
 > #### Tip
-> Visual Studio Code should show a notification that states: _"CMake Tools would like to configure IntelliSense for this folder"_. It is strongly recommended to allow the action to proceed as the various includes (like the ones related to the RE SDK) will automatically be properly resolved.
+> Visual Studio Code should show a notification that states: _"CMake Tools would like to configure IntelliSense for this folder"_. It is strongly recommended allowing the action to proceed as the various includes (like the ones related to the RE SDK) will automatically be properly resolved.
 
 #### Visual Studio (Windows)
 
@@ -163,43 +125,8 @@ Note that this script is expecting the `cmake` command line tool to be in the `P
 ```
 # cd build
 # ./re.sh -h
-usage: re.sh [-hnvbdtR] <command> [<command> ...] [-- [native-options]]
-
-positional arguments:
-  command          See "Commands" section
-
-optional arguments:
-  -h, --help       show this help message and exit
-  -n, --dry-run    Dry run (prints what it is going to do)
-  -v, --verbose    Verbose build
-  -b, --banner     Display a banner before every command
-  -d, --debugging  Use 'Debugging' for local45 command
-  -t, --testing    Use 'Testing' for local45 command
-  -R, --release    Invoke CMake in Release mode (for multi-config generators)
-
-Commands
-  ---- Native build commands ----
-  build       : build the RE (.dylib)
-  install     : build (code/gui) and install the RE for use in Recon
-  test        : run the unit tests
-  
-  ---- Jbox build commands (build45 / sandbox toolchain) ----
-  local45     : build (code/gui) and install the RE for use in Recon ('Deployment' type or -d/-t to change)
-  universal45 : build the package for uploading to Reason Studio servers (.u45)
-  validate45  : runs the Recon validate process on local45 (equivalent to ./re.sh local45 validate)
-
-  ---- Common commands ----
-  clean       : clean all builds
-  render      : runs RE2DRender to generate the GUI (necessary for running in Recon)
-  preview     : runs RE2DPreview to generate the device preview (useful for shop images)
-  uninstall   : deletes the installed RE
-  validate    : runs the Recon validate process on the currently installed plugin
-
-  ---- CMake target ----
-  <command>   : Any unknown <command> is treated as a cmake target
-
-  --- Native options ----
-  Pass remaining options to the native tool (ex: -- -j 8 for parallel build)
+usage: re.sh [-hnvlbdtRZ] <command> [<command> ...] [-- [native-options]]
+...
 ```
 
 You should be able to simply run `re.sh install` (resp. `re.bat`) to have the plugin fully built and installed in its default location. 
@@ -222,7 +149,7 @@ You can then open Recon and load the `[-info-long_name-]` rack extension. You wi
 
 #### Command line - `re.sh test`
 
-Issuing this command will compile and run the unit tests. This project provides a single basic test to demonstrate how to add new ones.
+Issuing this command will compile and run the unit tests (uses `re-mock`). This project provides a single basic test to demonstrate how to add new ones. Although the test provided is short, it actually does quite a lot of things: load and parse `info.lua`, `motherboard_def.lua` and `realtime_controller.lua` then instantiate the main instance class and run through one batch.
 
 #### IDEs
 
@@ -230,7 +157,7 @@ Some IDEs (like CLion) are aware of unit testing natively (with Google Test) and
 
 ### Next Steps
 
-- Check the [SDK documentation](https://developer.reasonstudios.com/documentation/rack-extension-sdk/4.2.0/jukebox-readme) for information on how to build a Rack Extension.
+- Check the [SDK documentation](https://developer.reasonstudios.com/documentation/rack-extension-sdk/4.3.0/jukebox-readme) for information on how to build a Rack Extension.
 - Check the [re-cmake](https://github.com/pongasoft/re-cmake) project for information about the build framework itself
 
 ### A note about debug logging
