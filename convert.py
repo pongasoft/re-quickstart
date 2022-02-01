@@ -112,14 +112,21 @@ while not version_txt.exists():
     else:
         user_sdk = ask_user(f'Path [{re_sdk_root}] is not a valid SDK. Provide the path to the RE SDK: ', False)
     re_sdk_root = Path(user_sdk)
+    if re_sdk_root.parts[-1] != 'SDK':
+        re_sdk_root = re_sdk_root / 'SDK'
     version_txt = re_sdk_root / 'version.txt'
+
+
+def to_cmake_path(p):
+    return "/".join(list(map(lambda x: x.replace('\\', ''), p.parts)))
+
 
 if re_sdk_root == default_re_sdk_root:
     plugin['options_extras'] = ''
 else:
     plugin['options_extras'] = f'''
 # Using RE SDK from non default location (see re-cmake documentation)
-set(RE_SDK_ROOT "{re_sdk_root}" CACHE PATH "Location of RE SDK")     
+set(RE_SDK_ROOT "{to_cmake_path(re_sdk_root)}" CACHE PATH "Location of RE SDK")     
 '''
 
 # 4. Load info.lua / extract project_name & device_type
@@ -128,7 +135,7 @@ if apple:
 else:
     lua_executable = re_sdk_root / 'Tools' / 'Build' / 'Lua' / 'Win' / 'lua.exe'
 
-info = subprocess.run([lua_executable, '-e', f"dofile('{info_lua}'); print(product_id .. ';' .. device_type)"],
+info = subprocess.run([str(lua_executable), '-e', f"dofile('{info_lua}'); print(product_id .. ';' .. device_type)"],
                       text=True,
                       capture_output=True).stdout
 info = str(info).split(';')
@@ -162,9 +169,6 @@ re_sources_h = list(re_project_dir.glob('**/*.h'))
 re_sources_2d = list(re_GUI2D_dir.glob('*.png'))
 
 assert len(re_sources_2d) > 0, "This tool only supports 2D (3D GUI is deprecated)."
-
-def to_cmake_path(p):
-    return "/".join(p.parts)
 
 
 tester_types = {

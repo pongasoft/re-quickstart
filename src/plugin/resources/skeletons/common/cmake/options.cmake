@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.17)
 #################
 # re-cmake
 #################
-set(re-cmake_GIT_TAG "v1.4.2" CACHE STRING "re-cmake git tag")
+set(re-cmake_GIT_TAG "v1.4.3" CACHE STRING "re-cmake git tag")
 set(re-cmake_GIT_REPO "https://github.com/pongasoft/re-cmake" CACHE STRING "re-cmake git repository url")
 
 # Uncomment/set to proper value if local instead of remote
@@ -13,7 +13,7 @@ set(re-cmake_ROOT_DIR "") # use remote re-cmake
 #################
 # re-logging (repo defined by re-cmake but can override here)
 #################
-set(re-logging_GIT_TAG "v1.0.0" CACHE STRING "re-logging git tag")
+set(re-logging_GIT_TAG "v1.0.1" CACHE STRING "re-logging git tag")
 #set(re-logging_GIT_REPO "https://github.com/pongasoft/re-mock" CACHE STRING "re-logging git repository url")
 
 # Uncomment/set to proper value if local instead of remote
@@ -23,7 +23,7 @@ set(re-logging_ROOT_DIR "") # use remote re-logging
 #################
 # re-mock (repo defined by re-cmake but can override here)
 #################
-set(re-mock_GIT_TAG "v1.0.0" CACHE STRING "re-mock git tag")
+set(re-mock_GIT_TAG "v1.0.1" CACHE STRING "re-mock git tag")
 #set(re-mock_GIT_REPO "https://github.com/pongasoft/re-mock" CACHE STRING "re-mock git repository url")
 
 # Uncomment/set to proper value if local instead of remote
