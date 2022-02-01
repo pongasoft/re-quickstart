@@ -39,6 +39,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2022-02-01 - 1.2.4
+
+* Fixes for Windows 10
+
 #### 2022-01-30 - 1.2.3
 
 * Added convert tool to convert an existing rack extension
