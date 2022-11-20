@@ -39,6 +39,14 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2022-02-01 - 1.2.5
+
+* Introduced `GUI2D/gui_2D.lua`: extracted the list of images used into its own file so that it can be generated (ex: from re-edit)
+
+#### 2022-02-01 - 1.2.6
+
+* New versions of re-cmake / re-mock
+
 #### 2022-02-01 - 1.2.4
 
 * Fixes for Windows 10

@@ -23,7 +23,7 @@ set(re-logging_ROOT_DIR "") # use remote re-logging
 #################
 # re-mock (repo defined by re-cmake but can override here)
 #################
-set(re-mock_GIT_TAG "v1.2.0" CACHE STRING "re-mock git tag")
+set(re-mock_GIT_TAG "v1.3.0" CACHE STRING "re-mock git tag")
 #set(re-mock_GIT_REPO "https://github.com/pongasoft/re-mock" CACHE STRING "re-mock git repository url")
 
 # Uncomment/set to proper value if local instead of remote
