@@ -223,6 +223,7 @@ blank_plugin_files = {
         re_project_dir / 'cmake' / 'options.cmake': blank_plugin_root / 'cmake' / 'options.cmake',
         re_project_dir / 'test' / 'cpp' / 'test-Device.cpp': blank_plugin_root / 'test' / 'cpp' / 'test-Device.cpp',
         re_project_dir / 'CMakeLists.txt': blank_plugin_root / 'CMakeLists.txt',
+        re_project_dir / 'GUI2D' / 'gui_2D.cmake': blank_plugin_root / 'GUI2D' / 'gui_2D.cmake',
     }
 }
 
