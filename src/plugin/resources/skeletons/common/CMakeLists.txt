@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
+# Capturing root of project
+set(RE_PROJECT_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}")
+
 # Using RE SDK version [-re_sdk_version-]
 set(RE_SDK_VERSION [-re_sdk_version-])
 
@@ -26,13 +29,13 @@ set(re_sources_cpp
     )
 
 # Defining where the local GUI2D files live
-set(RE_2D_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/GUI2D")
+set(RE_2D_SRC_DIR "${RE_PROJECT_ROOT_DIR}/GUI2D")
 
 # Including GUI2D files
 include("${RE_2D_SRC_DIR}/gui_2D.cmake")
 
 # Location of the test cases
-set(TEST_DIR "${CMAKE_CURRENT_LIST_DIR}/test/cpp")
+set(TEST_DIR "${RE_PROJECT_ROOT_DIR}/test/cpp")
 
 # List of test cases
 set(re_test_cpp

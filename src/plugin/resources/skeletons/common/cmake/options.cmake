@@ -9,7 +9,7 @@ set(re-cmake_DOWNLOAD_URL "${re-cmake_GIT_REPO}/archive/refs/tags/${re-cmake_GIT
 
 # Uncomment/set to proper value if local instead of remote
 set(re-cmake_ROOT_DIR "") # use remote re-cmake
-#set(re-cmake_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../pongasoft/re-cmake")
+#set(re-cmake_ROOT_DIR "${RE_PROJECT_ROOT_DIR}/../../pongasoft/re-cmake")
 
 #################
 # re-logging
@@ -20,7 +20,7 @@ set(re-logging_DOWNLOAD_URL "${re-logging_GIT_REPO}/archive/refs/tags/${re-loggi
 
 # Uncomment/set to proper value if local instead of remote
 set(re-logging_ROOT_DIR "") # use remote re-logging
-#set(re-logging_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../pongasoft/re-logging")
+#set(re-logging_ROOT_DIR "${RE_PROJECT_ROOT_DIR}/../../pongasoft/re-logging")
 
 #################
 # re-mock
@@ -31,7 +31,7 @@ set(re-mock_DOWNLOAD_URL "${re-mock_GIT_REPO}/archive/refs/tags/${re-mock_GIT_TA
 
 # Uncomment/set to proper value if local instead of remote
 set(re-mock_ROOT_DIR "") # use remote re-mock
-#set(re-mock_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../pongasoft/re-mock")
+#set(re-mock_ROOT_DIR "${RE_PROJECT_ROOT_DIR}/../../pongasoft/re-mock")
 
 # Set to ON if want to load/save samples with re-mock
 option(RE_MOCK_SUPPORT_FOR_AUDIO_FILE "" [-options_re_mock_support_for_audio_file-])
@@ -45,6 +45,6 @@ set(googletest_DOWNLOAD_URL "${googletest_GIT_REPO}/archive/refs/tags/${googlete
 
 # Uncomment/set to proper value if local instead of remote
 set(googletest_ROOT_DIR "") # use remote googletest
-#set(re-googletest_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../google/googletest")
+#set(re-googletest_ROOT_DIR "${RE_PROJECT_ROOT_DIR}/../../google/googletest")
 
 [-options_extras-]
