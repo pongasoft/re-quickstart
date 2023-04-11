@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 #################
 # re-cmake
 #################
-set(re-cmake_GIT_TAG "v1.5.0" CACHE STRING "re-cmake git tag")
+set(re-cmake_GIT_TAG "v1.5.1" CACHE STRING "re-cmake git tag")
 set(re-cmake_GIT_REPO "https://github.com/pongasoft/re-cmake" CACHE STRING "re-cmake git repository url")
 set(re-cmake_DOWNLOAD_URL "${re-cmake_GIT_REPO}/archive/refs/tags/${re-cmake_GIT_TAG}.zip" CACHE STRING "re-cmake download url" FORCE)
 
@@ -26,7 +26,7 @@ set(re-logging_ROOT_DIR "") # use remote re-logging
 # re-mock
 #################
 set(re-mock_GIT_REPO "https://github.com/pongasoft/re-mock" CACHE STRING "re-mock git repository url")
-set(re-mock_GIT_TAG "v1.3.2" CACHE STRING "re-mock git tag")
+set(re-mock_GIT_TAG "v1.4.0" CACHE STRING "re-mock git tag")
 set(re-mock_DOWNLOAD_URL "${re-mock_GIT_REPO}/archive/refs/tags/${re-mock_GIT_TAG}.zip" CACHE STRING "re-mock download url" FORCE)
 
 # Uncomment/set to proper value if local instead of remote
