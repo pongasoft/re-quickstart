@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 #################
 # re-cmake
 #################
-set(re-cmake_GIT_TAG "v1.5.2" CACHE STRING "re-cmake git tag")
+set(re-cmake_GIT_TAG "v1.6.0" CACHE STRING "re-cmake git tag")
 set(re-cmake_GIT_REPO "https://github.com/pongasoft/re-cmake" CACHE STRING "re-cmake git repository url")
 set(re-cmake_DOWNLOAD_URL "${re-cmake_GIT_REPO}/archive/refs/tags/${re-cmake_GIT_TAG}.zip" CACHE STRING "re-cmake download url" FORCE)
 
