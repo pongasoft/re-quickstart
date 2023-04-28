@@ -181,7 +181,7 @@ class RackExtension(val info: Info) {
         // CMakeLists.txt
         setToken("cmake_project_name", info.productId.split(".").lastOrNull()?: "Blank")
 
-        setToken("cmake_re_cpp_src_dir", "\"\${CMAKE_CURRENT_LIST_DIR}/src/cpp\"")
+        setToken("cmake_re_cpp_src_dir", "\"\${RE_PROJECT_ROOT_DIR}/src/cpp\"")
 
         setToken("cmake_re_sources_cpp",
             arrayOf(
