@@ -86,7 +86,7 @@ First, the tool displays a warning message because the tool will modify the fold
 
 ### 2. RE SDK Version
 ```
-Which version of the RE SDK is the extension built with? (must be >= 4.1.0) (leave empty for default [4.3.0]) =
+Which version of the RE SDK is the extension built with? (must be >= 4.1.0) (leave empty for default [4.4.0]) =
 ```
 The first question is the version of the SDK that the rack extension should use (defaults to the latest one the tool is aware of). Note that the tool does not support versions prior to 4.1.0 simply because `re-cmake` does not support these versions.
 
