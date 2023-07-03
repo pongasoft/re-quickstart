@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("js") version "1.5.30"
+    kotlin("js") version "1.8.21"
     id("com.github.gmazzo.buildconfig") version "2.0.2"
 }
 
@@ -11,8 +11,9 @@ version = "1.5.0"
 repositories {
     mavenCentral()
     jcenter()
-    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") }
+    maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
 }
+
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html:0.7.2")
 }
@@ -24,15 +25,18 @@ buildConfig {
 
 kotlin {
     js(IR) {
+        binaries.executable()
         browser {
-            binaries.executable()
+            commonWebpackConfig {
+                cssSupport {
+                    enabled.set(true)
+                }
+            }
             webpackTask {
                 outputFileName = "re-quickstart-${project.version}.js"
-                cssSupport.enabled = true
             }
             runTask {
                 outputFileName = "re-quickstart-${project.version}.js"
-                cssSupport.enabled = true
             }
         }
     }
