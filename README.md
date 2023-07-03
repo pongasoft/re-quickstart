@@ -39,6 +39,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2023-07-03 - 1.5.0
+
+* Use RE SDK 4.4.0
+
 #### 2022-02-01 - 1.2.5
 
 * Introduced `GUI2D/gui_2D.lua`: extracted the list of images used into its own file so that it can be generated (ex: from re-edit)

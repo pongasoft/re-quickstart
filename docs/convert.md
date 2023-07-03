@@ -54,9 +54,9 @@ It is strongly advised to run it in a copy of the original folder or better yet,
 controlled environment (so that it is easy to see the changes the script makes).
 ### WARNING # WARNING # WARNING ###
 
-Which version of the RE SDK is the extension built with? (must be >= 4.1.0) (leave empty for default [4.3.0]) =
-Could not locate the RE SDK in its default location [/Users/Shared/ReasonStudios/JukeboxSDK_4.3.0/SDK].
-  Provide the path to the RE SDK: /Volumes/Vault/ReasonStudios/JukeboxSDK_430_157/SDK
+Which version of the RE SDK is the extension built with? (must be >= 4.1.0) (leave empty for default [4.4.0]) =
+Could not locate the RE SDK in its default location [/Users/Shared/ReasonStudios/JukeboxSDK_4.4.0/SDK].
+  Provide the path to the RE SDK: /Volumes/Vault/ReasonStudios/JukeboxSDK_440_229/SDK
 Project Name (leave empty for default [VerySimpleSampler]) =
 Is the device fully compliant with hi-res (4.3.0+)? If you have are not sure, answer no. (Y/n)? n
 Name of the main instance this plugin creates (leave empty for default [CVerySimpleSampler]) =
@@ -92,8 +92,8 @@ The first question is the version of the SDK that the rack extension should use 
 
 ### 3. Location of the RE SDK
 ```
-Could not locate the RE SDK in its default location [/Users/Shared/ReasonStudios/JukeboxSDK_4.3.0/SDK].
-  Provide the path to the RE SDK: /Volumes/Vault/ReasonStudios/JukeboxSDK_430_157/SDK
+Could not locate the RE SDK in its default location [/Users/Shared/ReasonStudios/JukeboxSDK_4.4.0/SDK].
+  Provide the path to the RE SDK: /Volumes/Vault/ReasonStudios/JukeboxSDK_440_229/SDK
 ```
 The tool tries to locate the RE SDK installation based on where `re-cmake` expects it by default (check [Note about the RE SDK location](https://github.com/pongasoft/re-cmake#note-about-the-re-sdk-location) section for more details on the default location). If not found, it prompts for the location.
 

@@ -89,7 +89,7 @@ controlled environment (so that it is easy to see the changes the script makes).
 
 # 3. Check for sdk
 plugin['re_sdk_version'] = \
-    maybe_ask_user(False, "Which version of the RE SDK is the extension built with? (must be >= 4.1.0)", '4.3.0')
+    maybe_ask_user(False, "Which version of the RE SDK is the extension built with? (must be >= 4.1.0)", '4.4.0')
 re_sdk_version = tuple(map(int, (plugin['re_sdk_version'].split('.'))))
 assert re_sdk_version[0] == 4 and re_sdk_version[1] >= 1, f"Version {plugin['re_sdk_version']} no supported."
 

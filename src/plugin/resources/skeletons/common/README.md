@@ -8,7 +8,7 @@ Requirements
 ------------
 
 * This project requires CMake (minimum version 3.24) to be properly installed (`cmake` executable must be in your `PATH`)
-* This project currently expects RE SDK 4.3.0 (Hi Res support), 4.2.0 or 4.1.0 to be installed on the machine (it will not download it for you)
+* This project currently expects RE SDK 4.4.0 (arm64 support), 4.3.0 (Hi Res support), 4.2.0 or 4.1.0 to be installed on the machine (it will not download it for you)
 * Due to the RE SDK requirements, this project also requires python 3 to be installed
 * It has been tested on macOS Big Sur (11.7) / Xcode 13.2.1 (requires macOS 15+)
 * It has been tested on macOS 12.6 / Xcode 13.3 installed and Apple Silicon (forces `x86_64` build to compile and run)
@@ -28,7 +28,7 @@ Requirements
 Ultra Quick Starting Guide
 --------------------------
 
-* Download the [RE SDK 4.3.0](https://developer.reasonstudios.com/downloads/rack-extension-sdk)
+* Download the [RE SDK 4.4.0](https://developer.reasonstudios.com/downloads/rack-extension-sdk)
 * Unpack/Unzip the SDK in a location of your choice (`<path to location of your choice>`) and make sure `RE2DRender` is unzipped as well and is a sibling of `SDK`
 * Now run `./configure.py -p <path to location of your choice>/SDK` (resp. `python ./configure.py -p <path to location of your choice>SDK` for Win10)
 * Now go into the `build` folder created by the `configure` script and run `./re.sh install` (resp. `./re.bat install` for Win10)

@@ -175,8 +175,8 @@ class RackExtension(val info: Info) {
           newTokens.getOrPut(key, {value})
         }
 
-        // using SDK version 4.3.0
-        setToken("re_sdk_version", "4.3.0")
+        // using SDK version 4.4.0
+        setToken("re_sdk_version", "4.4.0")
 
         // CMakeLists.txt
         setToken("cmake_project_name", info.productId.split(".").lastOrNull()?: "Blank")
