@@ -14,8 +14,7 @@ Requirements
 
 * RE SDK 4.1.0+ installed
 * python3
-* At this stage it has only been tested on macOS (Windows support coming soon)
-
+* Tested on macOS 13 and Windows 11
 
 Usage
 -----
@@ -32,8 +31,15 @@ In order to run the conversion tool:
 3. Run the tool like this
 
     ```
+    # on macOS
     > cd <path_to_re_to_convert>           # where info.lua lives
     > <path_to_re-quickstart>/convert.py   
+    ```
+
+    ```
+    # on Windows
+    > cd <path_to_re_to_convert>           # where info.lua lives
+    > python3 <path_to_re-quickstart>\convert.py   
     ```
 
 4. The tool then does its best guess at inferring a few things and ask for confirmation on a few topics. It then generates the appropriate files.
@@ -43,7 +49,11 @@ In order to run the conversion tool:
 Example
 -------
 
-As a practical example, let's use the `VerySimpleSampler` example that comes with the RE SDK (under `SDK/Examples`).
+As a practical example, let's use the `VerySimpleSampler` example that comes with the RE SDK (under `SDK/Examples`). 
+
+> ### Notes
+> * The steps are similar for Windows (but you must use `python3` to invoke the python scripts and `re.bat` instead of `re.sh`).
+> * On Windows, the file `StdInclude.h` needs to be modified to simply include `Jukebox.h` instead of the `#ifdef _MSC_VER / #endif` section
 
 ```
 > cd <path_to_RE-SDK>/SDK/Examples/VerySimpleSampler
