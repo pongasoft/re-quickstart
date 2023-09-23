@@ -122,7 +122,7 @@ The tool suggests a project name (the default is computed as the last part of th
 Is the device fully compliant with hi-res (4.3.0+)? If you have are not sure, answer no. (Y/n)? n
 ```
 
-This section only applies to SDK that supports HD (which is 4.3.0+) so the question won't be asked for previous SDKs. This section tries to determine the best option to run `RE2DRender` with. It is always safe to answer no, but it will make the build a bit slower. If the device is HD compliant, then the build can be a littler faster. In this instance, the `VerySimpleSampler` example does not contain the HD version of the custom displays and as a result is not fully HD compliant.
+This section only applies to SDK that supports HD (which is 4.3.0+) so the question won't be asked for previous SDKs. This section tries to determine the best option to run `RE2DRender` with. It is always safe to answer no, but it will make the build a bit slower. If the device is HD compliant, then the build can be a little faster. In this instance, the `VerySimpleSampler` example does not contain the HD version of the custom displays and as a result is not fully HD compliant.
 
 > ### Note
 > Answering "no" generates the following section in `cmake/options.cmake`, so it is easy to change it later to `hi-res-only` when the device is fully compliant.
