@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.24)
 #################
 # re-cmake
 #################
-set(re-cmake_GIT_TAG "v1.7.0" CACHE STRING "re-cmake git tag")
+set(re-cmake_GIT_TAG "v1.7.1" CACHE STRING "re-cmake git tag")
 set(re-cmake_GIT_REPO "https://github.com/pongasoft/re-cmake" CACHE STRING "re-cmake git repository url")
 set(re-cmake_DOWNLOAD_URL "${re-cmake_GIT_REPO}/archive/refs/tags/${re-cmake_GIT_TAG}.zip" CACHE STRING "re-cmake download url" FORCE)
-set(re-cmake_DOWNLOAD_URL_HASH "SHA256=16b0dfc9142c95adf186e1a788d11f140f09fba4669104b82846626f1fab46a5" CACHE STRING "re-cmake download url hash" FORCE)
+set(re-cmake_DOWNLOAD_URL_HASH "SHA256=714f0d69e998e6526b24560d989f145c4f537ccd57810a4dbc0f60915dca9cb5" CACHE STRING "re-cmake download url hash" FORCE)
 
 # Uncomment/set to proper value if local instead of remote
 set(re-cmake_ROOT_DIR "") # use remote re-cmake
