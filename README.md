@@ -39,6 +39,14 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2024-06-19 - 1.5.2
+
+* Added `device_categories` to `info.lua` after Reason 13 new requirements
+
+#### 2023-09-23 - 1.5.1
+
+* New versions of re-cmake
+
 #### 2023-07-03 - 1.5.0
 
 * Use RE SDK 4.4.0

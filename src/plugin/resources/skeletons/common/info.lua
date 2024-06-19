@@ -15,6 +15,7 @@ product_id = "[-info-product_id-]"
 manufacturer = "[-info-manufacturer-]"
 version_number = "[-info-version_number-]"
 device_type = "[-info-device_type-]"
+device_categories = { "Misc" }
 supports_patches = false
 -- default_patch = "/Public/default.repatch"
 accepts_notes = [-info-accepts_notes-]
