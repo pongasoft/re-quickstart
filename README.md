@@ -39,6 +39,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2024-10-08 - 1.6.1
+
+- Fixes CMake deprecation warning
+
 #### 2024-10-07 - 1.6.0
 
 * Use RE SDK 4.5.0
