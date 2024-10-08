@@ -39,6 +39,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2024-10-07 - 1.6.0
+
+* Use RE SDK 4.5.0
+
 #### 2024-06-19 - 1.5.2
 
 * Added `device_categories` to `info.lua` after Reason 13 new requirements
