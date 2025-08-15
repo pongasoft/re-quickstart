@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.24)
 #################
 # re-cmake
 #################
-set(re-cmake_GIT_TAG "v1.8.2" CACHE STRING "re-cmake git tag")
+set(re-cmake_GIT_TAG "v1.8.3" CACHE STRING "re-cmake git tag")
 set(re-cmake_GIT_REPO "https://github.com/pongasoft/re-cmake" CACHE STRING "re-cmake git repository url")
 set(re-cmake_DOWNLOAD_URL "${re-cmake_GIT_REPO}/archive/refs/tags/${re-cmake_GIT_TAG}.zip" CACHE STRING "re-cmake download url" FORCE)
-set(re-cmake_DOWNLOAD_URL_HASH "SHA256=0d57ad9ab5b9142d5054d3f6d746e949a8ddca8776afec46e0561a6db6afe95e" CACHE STRING "re-cmake download url hash" FORCE)
+set(re-cmake_DOWNLOAD_URL_HASH "SHA256=f6a245e82cb7364e539f09103bc69d05964181029f6401f83219436222ad5e87" CACHE STRING "re-cmake download url hash" FORCE)
 
 # Uncomment/set to proper value if local instead of remote
 set(re-cmake_ROOT_DIR "") # use remote re-cmake
@@ -16,9 +16,9 @@ set(re-cmake_ROOT_DIR "") # use remote re-cmake
 # re-logging
 #################
 set(re-logging_GIT_REPO "https://github.com/pongasoft/re-logging" CACHE STRING "re-logging git repository url")
-set(re-logging_GIT_TAG "v2.0.0" CACHE STRING "re-logging git tag")
+set(re-logging_GIT_TAG "v2.0.1" CACHE STRING "re-logging git tag")
 set(re-logging_DOWNLOAD_URL "${re-logging_GIT_REPO}/archive/refs/tags/${re-logging_GIT_TAG}.zip" CACHE STRING "re-logging download url" FORCE)
-set(re-logging_DOWNLOAD_URL_HASH "SHA256=0de4ffda5f761187abe0eb3f205a4f928177e0d6838f5f9111615de4e9ef1d56" CACHE STRING "re-logging download url hash" FORCE)
+set(re-logging_DOWNLOAD_URL_HASH "SHA256=c1b94d5d766738c436b6b07199ef2be1f45b35bb8f46623e48314aa6b02d37d3" CACHE STRING "re-logging download url hash" FORCE)
 
 # Uncomment/set to proper value if local instead of remote
 set(re-logging_ROOT_DIR "") # use remote re-logging

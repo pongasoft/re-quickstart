@@ -10,7 +10,7 @@ using namespace re::mock;
 TEST([-test_class_name-], Init)
 {
   // make sure that logging/DCHECK_F calls throw an exception rather than aborting during test
-  RE_LOGGING_INIT_FOR_TEST("[-info-medium_name-]");
+  RE_LOGGING_INIT_FOR_TEST("[-test_class_name-].Init");
 
   DLOG_F(INFO, "Init");
 
