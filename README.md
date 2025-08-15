@@ -39,6 +39,11 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2025-08-15 - 1.8.0
+
+- Upgraded re-cmake / re-logging
+- Using re-logging 2.0.0 simplifies the code a bit since RE_LOGGING_INIT_FOR_RE is a macro that does nothing in DEBUG mode, so no need to escape it
+
 #### 2024-10-08 - 1.6.1
 
 - Fixes CMake deprecation warning
