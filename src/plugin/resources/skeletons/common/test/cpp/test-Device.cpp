@@ -9,10 +9,10 @@ using namespace re::mock;
 // [-test_class_name-] - Init
 TEST([-test_class_name-], Init)
 {
-  DLOG_F(INFO, "[-test_class_name-] - Init");
+  // make sure that logging/DCHECK_F calls throw an exception rather than aborting during test
+  RE_LOGGING_INIT_FOR_TEST("[-info-medium_name-]");
 
-  // make sure that loguru/DCHECK_F calls throw an exception rather than aborting during test
-  loguru::init_for_test();
+  DLOG_F(INFO, "Init");
 
   // load/parse info.lua, motherboard_def.lua and realtime_controller.lua
   auto c = DeviceConfig<[-test_class_name-]>::fromJBoxExport(RE_CMAKE_PROJECT_DIR);
