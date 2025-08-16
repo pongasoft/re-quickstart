@@ -39,6 +39,10 @@ Note that the `deploy` task is being used locally to deploy only the necessary a
 
 Release Notes
 =============
+#### 2025-08-16 - 1.8.2
+ 
+- Upgraded re-cmake / re-logging
+
 #### 2025-08-15 - 1.8.0
 
 - Upgraded re-cmake / re-logging
