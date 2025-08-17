@@ -6,11 +6,10 @@ plugins {
 }
 
 group = "org.pongasoft"
-version = "1.8.2"
+version = "1.8.3"
 
 repositories {
     mavenCentral()
-    jcenter()
     maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
 }
 
